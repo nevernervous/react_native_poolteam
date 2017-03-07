@@ -28,7 +28,7 @@ export default class Settings extends Component {
             alert_emails: [],
             buf_index: null,
             isWorking: false,
-            btn_dialog: false,
+            btn_dialog: true,
             txt_dialog: '',
             alert_sms: [],
             alert_type: '',
@@ -125,6 +125,20 @@ export default class Settings extends Component {
         this.setState({buf_index: index, alert_type: alert_type});
         this.refs.delete_alert_modal.open();
     }
+
+    onPressModalDeleteButton() {
+
+    }
+
+    onChangeTextDeleteDialog(text) {
+        this.setState({txt_dialog: text})
+        if(text == 'DELETE') {
+            this.setState({btn_dialog: false})
+        } else {
+            this.setState({btn_dialog: true})
+        }
+    }
+
     renderMainContent() {
         return (
             <ScrollView style={styles.content}>
@@ -218,11 +232,10 @@ export default class Settings extends Component {
                 >
                     <View style={styles.modal_inputWrap}>
                         <TextInput
-                            value={this.state.recoveryEmail}
-                            onChangeText={(text) => this.setState({recoveryEmail: text})}
-                            placeholder="Recovery Email Address"
+                            value={this.state.txt_dialog}
+                            onChangeText={this.onChangeTextDeleteDialog.bind(this)}
+                            placeholder="Type 'DELETE' to confirm"
                             style={styles.modal_input}
-                            keyboardType="email-address"
                             returnKeyType="done"
                         />
                     </View>
@@ -239,13 +252,14 @@ export default class Settings extends Component {
 
                         />
                         <Button
-                            title="Send"
+                            title="Delete"
                             backgroundColor={yellow600}
                             color={blue900}
                             fontSize={18}
                             raised
                             activeOpacity={0.5}
-                            onPress={() => this.onPressSend()}
+                            disabled={this.state.btn_dialog}
+                            onPress={() => this.onPressModalDeleteButton()}
 
                         />
                     </View>

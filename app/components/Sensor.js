@@ -76,7 +76,6 @@ export default class Sensor extends Component {
             // values,
             itemCount : 30,
             date: date,
-            calendarShow: false,
         };
     }
 
@@ -134,88 +133,84 @@ export default class Sensor extends Component {
     }
 
     renderMainContent() {
-        console.log('asfasfasfasfasfd');
-        if(this.state.calendarShow == false) {
-            var Highcharts = 'Highcharts';
-            let chart_data = null;
-            if (this.values != null){
-                var time = (new Date()).getTime()
-                chart_data = this.values.map((val) => {
-                    return {
-                        x: val[0] * 1000,
-                        y: parseFloat(val[1])
-                    };
-                });
-            }
-            var conf = {
-                chart: {
-                    type: 'spline',
-                    marginRight: 10,
-
-                },
-                title: {
-                    text: this.name
-                },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 100
-                },
-                yAxis: {
-                    title: {
-                        text: ''
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '</b><br/><b>' + Highcharts.numberFormat(this.y, 2); + '</b>';
-                    }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: this.name,
-                    data: chart_data
-                }],
-                credits: {
-                    enabled: false
-                },
-            };
-
-            return (
-                <ScrollableTabView>
-                    <View tabLabel='Graph'>
-                        {this.values == null ?
-                            <LoadingIndicator center={false}/> :
-                            chart_data.length > 1 ?
-                            <ChartView style={{marginTop: 10, height: 400}} config={conf}/> : <Text style={{marginTop: 10}} h3>No Data</Text>
-                        }
-                    </View>
-
-                    <View tabLabel='Table'>
-                        {this.values == null ?
-                            <LoadingIndicator center={false}/> :
-                            this.values.length > 1?
-                            <DataTable
-                                dataSource={this.values}
-                            /> : <Text style={{marginTop: 10}} h3>No Data</Text>
-                        }
-                    </View>
-                </ScrollableTabView>
-            );
+        var Highcharts = 'Highcharts';
+        let chart_data = null;
+        if (this.values != null){
+            var time = (new Date()).getTime()
+            chart_data = this.values.map((val) => {
+                return {
+                    x: val[0] * 1000,
+                    y: parseFloat(val[1])
+                };
+            });
         }
+        var conf = {
+            chart: {
+                type: 'spline',
+                marginRight: 10,
+
+            },
+            title: {
+                text: this.name
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 100
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '</b><br/><b>' + Highcharts.numberFormat(this.y, 2); + '</b>';
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: this.name,
+                data: chart_data
+            }],
+            credits: {
+                enabled: false
+            },
+        };
+
+        return (
+            <ScrollableTabView>
+                <View tabLabel='Graph'>
+                    {this.values == null ?
+                        <LoadingIndicator center={false}/> :
+                        chart_data.length > 1 ?
+                        <ChartView style={{marginTop: 10, height: 400}} config={conf}/> : <Text style={{marginTop: 10}} h3>No Data</Text>
+                    }
+                </View>
+
+                <View tabLabel='Table'>
+                    {this.values == null ?
+                        <LoadingIndicator center={false}/> :
+                        this.values.length > 1?
+                        <DataTable
+                            dataSource={this.values}
+                        /> : <Text style={{marginTop: 10}} h3>No Data</Text>
+                    }
+                </View>
+            </ScrollableTabView>
+        );
     }
 
     showCalendar() {
-        this.setState({calendarShow: true})
         this.refs.calendarModal.open();
     }
     render() {
@@ -242,9 +237,10 @@ export default class Sensor extends Component {
                     </View>
                 </View>
 
+                {this.renderMainContent()}
+
                 <Modal style={styles.modal_calendar}
                        ref={"calendarModal"}
-                       onClosed={() => this.setState({calendarShow: false})}
                 >
                     <View style={{alignItems:'center', flex: 1}}>
                     <CalendarPicker
@@ -279,8 +275,6 @@ export default class Sensor extends Component {
                         />
                     </View>
                 </Modal>
-
-                {this.renderMainContent()}
             </View>
         );
     }
