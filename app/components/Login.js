@@ -165,6 +165,7 @@ export default class Login extends Component {
                     <Modal
                         style={styles.modal}
                         ref={"forgot_password_modal"}
+                        onClosed={() => this.setState({recoveryEmail: ''})}
                     >
                         <View style={styles.modal_inputWrap}>
                             <TextInput
@@ -174,6 +175,7 @@ export default class Login extends Component {
                                 style={styles.modal_input}
                                 keyboardType="email-address"
                                 returnKeyType="done"
+                                onSubmitEditing={() => this.onPressSend()}
                             />
                         </View>
 
