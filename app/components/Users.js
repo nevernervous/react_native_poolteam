@@ -4,10 +4,11 @@ import {
     View,
     StyleSheet,
     Dimensions,
+    Image,
 } from 'react-native';
 
 import {Text, Icon} from 'react-native-elements';
-import { Divider } from 'react-native-material-design';
+import { Divider ,Card, Button} from 'react-native-material-design';
 
 import store from '../store';
 import api from '../api';
@@ -19,13 +20,52 @@ const { width, height } = Dimensions.get("window");
 export default class Users extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            b_loading: false,
+            errorText: null,
+            users: {},
+            dlg_type: null,
+            dlg_text: '',
+            dlg_open_assign: false,
+            dlg_open_dismiss: false,
+            dlg_error: null,
+            dlg_b_button: false,
+            cur_user: {'name': ''},
+            cur_dev: {'name': ''},
+            isWorking: false,
+            dlg_open_delete: false
+        };
     }
 
     componentWillMount() {
-
+        this.mounted = true;
+        this.pollUsers();
     }
 
     componentWillUnmount() {
+        this.mounted = false;
+    }
+
+    pollUsers() {
+        this.setState({b_loading: true});
+        api.getAllUsers(store.email)
+            .then(response => {
+                console.log(response.payload);
+                if (!this.mounted) return;
+                // console.log(response.payload);
+                if (response.status === 304) this.setState({ errorText: null, b_loading: false});
+                else {
+                    this.setState({ errorText: null, b_loading: false, users: response.payload});
+                }
+            })
+            .catch(err => {
+                if (!this.mounted) return;
+                this.setState({
+                    errorText: err.toString(),
+                    users: [],
+                    b_loading: false
+                })
+            });
     }
 
     render() {
@@ -40,6 +80,9 @@ export default class Users extends Component {
                           onPress={() => this.props.navigator.pop()}
                     />
                     <Text h4 style={styles.headerText}>Users</Text>
+                </View>
+                <View>
+
                 </View>
             </View>
         );
