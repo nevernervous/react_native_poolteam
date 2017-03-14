@@ -9,10 +9,13 @@ import {
     ListView,
     Platform,
     TouchableOpacity,
+    TextInput,
 } from 'react-native';
 
-import {Text, Icon, Card,ListItem} from 'react-native-elements';
+import {Text, Icon, Card,ListItem, Button} from 'react-native-elements';
 import {Divider} from 'react-native-material-design';
+import Modal from 'react-native-modalbox';
+import PoolListItem from './common/PoolListItem';
 import store from '../store';
 import api from '../api';
 import normalize from './common/normalize';
@@ -27,6 +30,10 @@ export default class UserDetail extends Component {
         super(props);
         this.state =  {
             user: this.props.user,
+            dlg_text: '',
+            btn_dialog: false,
+            dlg_type: '',
+            cur_dev: null,
         }
     }
 
@@ -38,8 +45,72 @@ export default class UserDetail extends Component {
         this.mounted = false;
     }
 
-    onPressDeleteUser() {
+    OpenModal(dlg_type) {
+        this.setState({dlg_type: dlg_type, dlg_text: ''})
+        this.refs.modal.open();
+    }
 
+    onCloseDialog() {
+        this.setState({dlg_text:'', btn_dialog: false})
+    }
+
+    onPressModalConfirmButton() {
+        switch (this.state.dlg_type) {
+            case 'delete':
+                api.deleteUser(this.state.user.id)
+                    .then(response => {
+                        this.refs.modal.close();
+                        this.props.navigator.pop();
+                    })
+                    .catch(err => {
+                        Alert.alert('Error', err.toString());
+                    });
+                break;
+
+            case 'dismiss':
+                api.dismissDeviceFromUser(store.email, this.state.user.id, this.state.cur_dev.sn)
+                    .then(response => {
+                        let user = this.state.user;
+                        if (response.payload == 'Ok'){
+                            for (let i=0; i < user.devices.length; i++)
+                                if (user.devices[i].sn == this.state.cur_dev.sn)
+                                    user.devices.splice(i, 1);
+                        }
+                        this.setState({ user: user});
+                        this.refs.modal.close();
+                    })
+                    .catch(err => {
+                        Alert.alert('Error', err.toString());
+                    });
+                break;
+
+            case 'assign':
+                api.assignDeviceToUser(store.email, this.state.user.id, this.state.dlg_text)
+                    .then(response => {
+                        let user = this.state.user;
+                        if (user.devices.length > 0)
+                            user.devices.push({"name": response.payload, "sn": this.state.dlg_text});
+                        else
+                            user.devices = [{"name": response.payload, "sn": this.state.dlg_text}];
+                        this.setState({ user: user});
+                        this.refs.modal.close();
+                    })
+                    .catch(err => {
+                        Alert.alert('Error', err.toString());
+                    });
+                break;
+
+        }
+    }
+
+    onChangeTextDialog(text) {
+        this.setState({dlg_text: text});
+        if (this.state.dlg_type == 'assign')
+            this.setState({btn_dialog : (text.length > 0)});
+        else if (this.state.dlg_type == 'dismiss')
+            this.setState({btn_dialog : (text == 'DISMISS')});
+        else
+            this.setState({btn_dialog : (text == 'DELETE')});
     }
 
     renderMainContent() {
@@ -81,11 +152,12 @@ export default class UserDetail extends Component {
                             {
                                 this.state.user.devices.length > 0 ?
                                 this.state.user.devices.map((dev, i) =>
-                                    <ListItem
+                                    <PoolListItem
                                         key={i}
                                         title={dev.name}
                                         subtitle={dev.sn}
-                                        rightIcon={{name: 'cancel'}}
+                                        rightIcon={{name: 'cancel', onPress: () => {this.setState({cur_dev: dev}); this.OpenModal('dismiss');}}}
+
                                     />
                                 ) : null
                             }
@@ -95,12 +167,14 @@ export default class UserDetail extends Component {
                                   containerStyle={{backgroundColor:blue900}}
                                   underlayColor={blue400}
                                   size={18}
+                                  onPress={() => this.OpenModal('assign')}
 
                             />
                             <Divider/>
                             <TouchableOpacity
                                 activeOpacity={.5}
-                                onPress={() => this.onPressDeleteUser()}>
+                                onPress={() => this.OpenModal('delete')}
+                            >
                                 <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'flex-end', paddingTop: 5}}>
                                     <Icon name="delete"
                                           color={red500}
@@ -113,6 +187,70 @@ export default class UserDetail extends Component {
                 </Card>
 
             </ScrollView>
+        );
+    }
+
+    renderModal() {
+        let modal_title = '';
+        let placeholder = '';
+        let confirmText = '';
+        switch (this.state.dlg_type) {
+            case 'dismiss':
+                modal_title = 'Dismiss Device (' + this.state.cur_dev.name + ') from [' + this.state.user.name + ']';
+                placeholder =  "Type 'DISMISS' to confirm";
+                confirmText = 'DISMISS';
+                break;
+            case 'assign':
+                modal_title = 'Assign Device to [' + this.state.user.name + ']';
+                placeholder =  "Input Device Serial Number";
+                confirmText = 'ASSIGN';
+                break;
+            case 'delete':
+                modal_title = 'Delete [' + this.state.user.name + ']';
+                placeholder =  "Type 'DELETE' to confirm";
+                confirmText = 'DELETE';
+                break;
+        }
+        return (
+            <Modal
+                style={styles.modal}
+                ref={"modal"}
+                onClosed={() => this.onCloseDialog()}
+            >
+                <Text h4 style={{marginLeft: 20, marginVertical:15}}>{modal_title}</Text>
+                <View style={styles.modal_inputWrap}>
+                    <TextInput
+                        value={this.state.txt_dialog}
+                        placeholder={placeholder}
+                        style={styles.modal_input}
+                        returnKeyType="done"
+                        onChangeText={this.onChangeTextDialog.bind(this)}
+                    />
+                </View>
+                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <Button
+                        title="Cancel"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        onPress={() => this.refs.modal.close()}
+
+                    />
+                    <Button
+                        title={confirmText}
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        disabled={!this.state.btn_dialog}
+                        onPress={() => this.onPressModalConfirmButton()}
+
+                    />
+                </View>
+            </Modal>
         );
     }
 
@@ -130,7 +268,7 @@ export default class UserDetail extends Component {
                     <Text h4 style={styles.headerText}>User - {this.props.user.name} </Text>
                 </View>
                 {this.renderMainContent()}
-
+                {this.renderModal()}
             </View>
         );
     }
@@ -174,6 +312,23 @@ const styles = StyleSheet.create({
         }),
         marginBottom: 5,
         color: "#43484d"
+    },
+    modal: {
+        height: 220,
+        width: 350,
+    },
+    modal_inputWrap: {
+        alignItems: "center",
+        marginVertical: 10,
+        marginLeft: 20,
+        height: 40,
+        width: 250,
+        borderBottomWidth: 1,
+        borderBottomColor: "#CCC"
+    },
+    modal_input: {
+        flex: 1,
+        paddingHorizontal: 10,
     },
 });
 
