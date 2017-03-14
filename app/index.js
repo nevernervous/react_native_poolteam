@@ -5,6 +5,7 @@ import Signup from './components/Signup';
 import MyPool from './components/MyPool';
 import Pool from './components/Pool';
 import Users from './components/Users';
+import UserDetail from './components/UserDetail';
 import Sensor from './components/Sensor';
 import Settings from './components/Settings';
 
@@ -13,6 +14,7 @@ var ROUTES = {
     signup: Signup,
     mypool: MyPool,
     users: Users,
+    userdetail: UserDetail,
     pool: Pool,
     sensor: Sensor,
     settings: Settings,
@@ -25,7 +27,14 @@ export default class App extends Component {
 
     renderScene(route, navigator) {
         let RouteComponent = ROUTES[route.name];
-        return <RouteComponent navigator={navigator} {...route}/>;
+        return <RouteComponent ref={component => { route.scene = component; }}
+                               navigator={navigator} {...route}/>;
+    }
+
+    _onWillFocus(route) {
+        if (route.scene && route.scene.componentWillFocus) {
+            route.scene.componentWillFocus();
+        }
     }
 
     render() {
@@ -35,6 +44,7 @@ export default class App extends Component {
                 initialRoute={{name: 'login'}}
                 renderScene={this.renderScene}
                 configureScene={() => {return Navigator.SceneConfigs.PushFromRight;}}
+                onWillFocus={this._onWillFocus}
             />
 
         );

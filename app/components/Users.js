@@ -5,15 +5,16 @@ import {
     StyleSheet,
     Dimensions,
     Image,
+    ScrollView,
+    ListView,
 } from 'react-native';
 
-import {Text, Icon} from 'react-native-elements';
-import { Divider ,Card, Button} from 'react-native-material-design';
-
+import {Text, Icon, List, ListItem} from 'react-native-elements';
+import {Divider} from 'react-native-material-design';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
+import {yellow600, blue900, grey300, blue400, green800, red500, lime500} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
 
@@ -24,16 +25,6 @@ export default class Users extends Component {
             b_loading: false,
             errorText: null,
             users: {},
-            dlg_type: null,
-            dlg_text: '',
-            dlg_open_assign: false,
-            dlg_open_dismiss: false,
-            dlg_error: null,
-            dlg_b_button: false,
-            cur_user: {'name': ''},
-            cur_dev: {'name': ''},
-            isWorking: false,
-            dlg_open_delete: false
         };
     }
 
@@ -46,13 +37,14 @@ export default class Users extends Component {
         this.mounted = false;
     }
 
+    componentWillFocus() {
+        this.pollUsers();
+    }
     pollUsers() {
         this.setState({b_loading: true});
         api.getAllUsers(store.email)
             .then(response => {
-                console.log(response.payload);
                 if (!this.mounted) return;
-                // console.log(response.payload);
                 if (response.status === 304) this.setState({ errorText: null, b_loading: false});
                 else {
                     this.setState({ errorText: null, b_loading: false, users: response.payload});
@@ -68,6 +60,31 @@ export default class Users extends Component {
             });
     }
 
+    onPressUserItem(index) {
+        this.props.navigator.push({ name: 'userdetail', user: this.state.users[index]});
+    }
+
+    renderMainContent() {
+        return (
+            <ScrollView>
+                <List>
+                    {
+                        this.state.users.map((user, i) => (
+                            <ListItem
+                                key={i}
+                                title={user.name}
+                                subtitle={user.role === 'admin'? "Administrator": "Guest"}
+                                leftIcon={{name: user.role === 'admin'? "star": "perm-identity", color: user.role === 'admin'? red500: lime500}}
+                                onPress={() => this.onPressUserItem(i)}
+                                underlayColor={grey300}
+                            />
+                        ))
+                    }
+                </List>
+            </ScrollView>
+        );
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -81,9 +98,7 @@ export default class Users extends Component {
                     />
                     <Text h4 style={styles.headerText}>Users</Text>
                 </View>
-                <View>
-
-                </View>
+                {this.state.b_loading? <LoadingIndicator/>: this.renderMainContent()}
             </View>
         );
     }
@@ -111,5 +126,9 @@ const styles = StyleSheet.create({
     headerText: {
         color: yellow600,
         paddingLeft: 10,
+    },
+    content: {
+        marginTop: 10,
+        marginHorizontal:10,
     },
 });
