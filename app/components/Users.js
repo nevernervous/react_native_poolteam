@@ -40,6 +40,7 @@ export default class Users extends Component {
     componentWillFocus() {
         this.pollUsers();
     }
+
     pollUsers() {
         this.setState({b_loading: true});
         api.getAllUsers(store.email)

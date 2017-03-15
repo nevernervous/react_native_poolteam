@@ -20,7 +20,7 @@ import LoadingIndicator from './common/LoadingIndicator';
 import DataTable from './common/DataTable';
 
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 1000;
+const HA_POLL_INTERVAL_MS = 30000;
 
 
 function getMuranoErrorText() {

@@ -22,7 +22,7 @@ import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 1000;
+const HA_POLL_INTERVAL_MS = 30000;
 
 export default class MyPool extends Component {
     constructor(props) {
@@ -75,6 +75,8 @@ export default class MyPool extends Component {
                    pools: null,
                    timeoutId: null
                });
+               if(err.toString() == '403')
+                   this.props.navigator.popToTop();
             });
     }
 
@@ -111,10 +113,13 @@ export default class MyPool extends Component {
 
     onPressAddPool() {
         api.addPool(this.state.new_device_name, this.state.new_device_sn)
-            .then(() => this.refs.add_pool_modal.close())
+            .then(() => {
+                this.refs.add_pool_modal.close()
+                this.polllPools();
+            })
             .catch(err =>{
-                // Alert.alert('Error', 'This device did not upload any data.');
-                    Alert.alert('Error', err.toString());
+                Alert.alert('Error', 'This device did not upload any data.');
+                //     Alert.alert('Error', err.toString());
 
                 }
             );
@@ -132,6 +137,7 @@ export default class MyPool extends Component {
                     console.log("Successfully deleted...");
                 }
                 this.refs.delete_pool_modal.close();
+                this.polllPools();
             })
             .catch(err => {
                 Alert.alert('Error', err.toString());
@@ -150,6 +156,7 @@ export default class MyPool extends Component {
                     console.log("Successfully updated...");
                 }
                 this.refs.edit_pool_modal.close();
+                this.polllPools();
             })
             .catch(err => {
                 Alert.alert('Error', err.toString());
@@ -160,11 +167,11 @@ export default class MyPool extends Component {
     }
 
     renderMainContent() {
-        const { errorText, pools } = this.state;
-        if (errorText) {
-            Alert.alert('Error', errorText);
-            return;
-        }
+        const { pools } = this.state;
+        // if (errorText) {
+        //     Alert.alert('Error', errorText);
+        //     return;
+        // }
         if (!pools) return <LoadingIndicator />;
         if (pools.length)
             return <PoolList

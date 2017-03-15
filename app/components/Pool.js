@@ -16,7 +16,7 @@ import Logo from './common/Logo';
 import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 1000;
+const HA_POLL_INTERVAL_MS = 30000;
 
 function getMuranoErrorText() {
     return `Murano Error: It appears this serial number was either not
