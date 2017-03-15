@@ -15,7 +15,7 @@ import {
 import {Text, Icon, Card,ListItem, Button} from 'react-native-elements';
 import {Divider} from 'react-native-material-design';
 import Modal from 'react-native-modalbox';
-import PoolListItem from './common/PoolListItem';
+import DeviceListItem from './common/ListItem';
 import store from '../store';
 import api from '../api';
 import normalize from './common/normalize';
@@ -152,7 +152,7 @@ export default class UserDetail extends Component {
                             {
                                 this.state.user.devices.length > 0 ?
                                 this.state.user.devices.map((dev, i) =>
-                                    <PoolListItem
+                                    <DeviceListItem
                                         key={i}
                                         title={dev.name}
                                         subtitle={dev.sn}

@@ -9,8 +9,9 @@ import {
 } from 'react-native';
 
 import {
-    SideMenu, List, ListItem, Text, Icon, Button,
+    SideMenu, Text, Icon, Button, FormLabel, FormInput,
 } from 'react-native-elements';
+import Modal from 'react-native-modalbox';
 
 
 import store from '../store';
@@ -20,9 +21,8 @@ import {yellow600, blue900, grey300, blue400} from './common/color';
 import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
-import PopupMenu from './common/PopupMenu';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 10000;
+const HA_POLL_INTERVAL_MS = 1000;
 
 export default class MyPool extends Component {
     constructor(props) {
@@ -32,17 +32,20 @@ export default class MyPool extends Component {
             pools: store.pools || null,
             timeoutId: null,
             errorText: null,
+            new_device_name: '',
+            new_device_sn: '',
+            delete_modal_text: '',
+            edit_modal_text: '',
+            selected_pool: null,
         };
     }
 
     componentWillMount() {
-        console.log('MyPool mounted');
         this.mounted = true;
         this.polllPools();
     }
 
     componentWillUnmount() {
-        console.log('MyPool unmounted');
         this.mounted = false;
         clearTimeout(this.state.timeoutId);
 
@@ -106,7 +109,54 @@ export default class MyPool extends Component {
         this.props.navigator.push({ name: 'pool', serialNumber: pool.serialnumber});
     }
 
-    onPressAdd() {
+    onPressAddPool() {
+        api.addPool(this.state.new_device_name, this.state.new_device_sn)
+            .then(() => this.refs.add_pool_modal.close())
+            .catch(err =>{
+                // Alert.alert('Error', 'This device did not upload any data.');
+                    Alert.alert('Error', err.toString());
+
+                }
+            );
+    }
+
+    onPressDeletePool(pool) {
+        this.setState({selected_pool: pool, delete_modal_text: ''});
+        this.refs.delete_pool_modal.open();
+    }
+
+    deletePool() {
+        api.removePool(this.state.selected_pool.serialnumber)
+            .then(response => {
+                if (response.payload.status_code == 204){
+                    console.log("Successfully deleted...");
+                }
+                this.refs.delete_pool_modal.close();
+            })
+            .catch(err => {
+                Alert.alert('Error', err.toString());
+            });
+    }
+
+    onPressEditPool(pool) {
+        this.setState({selected_pool: pool, edit_modal_text: pool.name});
+        this.refs.edit_pool_modal.open();
+    }
+
+    editPool() {
+        api.updatePoolName(this.state.selected_pool.serialnumber, this.state.edit_modal_text)
+            .then(response => {
+                if (response.payload.status_code == 204){
+                    console.log("Successfully updated...");
+                }
+                this.refs.edit_pool_modal.close();
+            })
+            .catch(err => {
+                Alert.alert('Error', err.toString());
+            });
+    }
+    onCloseDialog() {
+        this.setState({new_device_name: '', new_device_sn: ''});
     }
 
     renderMainContent() {
@@ -116,7 +166,13 @@ export default class MyPool extends Component {
             return;
         }
         if (!pools) return <LoadingIndicator />;
-        if (pools.length) return <PoolList pools={pools} onPressPoolItem={this.onPressPoolItem.bind(this)}/>;
+        if (pools.length)
+            return <PoolList
+                pools={pools}
+                onPressPoolItem={this.onPressPoolItem.bind(this)}
+                onPressDeletePool={this.onPressDeletePool.bind(this)}
+                onPressEditPool={this.onPressEditPool.bind(this)}
+            />;
 
     }
 
@@ -154,13 +210,136 @@ export default class MyPool extends Component {
                                   color='white'
                                   containerStyle={{backgroundColor:blue900}}
                                   underlayColor={blue400}
-                                  onPress={() => this.onPressAdd()}
+                                  onPress={() => this.refs.add_pool_modal.open()}
                             /> : null
                     }
                 </View>
 
                 {/*NoteticationSystem add*/}
             </View>
+            <Modal
+                style={styles.modal}
+                ref={"add_pool_modal"}
+                onClosed={() => this.onCloseDialog()}
+            >
+                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                    New Device
+                </Text>
+                <FormLabel>Name</FormLabel>
+                <FormInput
+                    inputStyle={{color: 'black'}}
+                    value={this.state.new_device_name}
+                    placeholder="E.g. Living Room Lamp"
+                    returnKeyType="done"
+                    onChangeText={(text) => this.setState({new_device_name: text})}
+                />
+                <FormLabel>Identity / Serial Number</FormLabel>
+                <FormInput
+                    inputStyle={{color: 'black'}}
+                    placeholder="E.g. abcde12345"
+                    value={this.state.new_device_sn}
+                    returnKeyType="done"
+                    onChangeText={(text) => this.setState({new_device_sn: text})}
+                />
+                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <Button
+                        title="Cancel"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        onPress={() => this.refs.add_pool_modal.close()}
+                    />
+                    <Button
+                        title="Add"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        disabled={this.state.new_device_name == '' || this.state.new_device_sn == ''}
+                        onPress={() => this.onPressAddPool()}
+                    />
+                </View>
+            </Modal>
+
+            <Modal
+                style={{width: 350, height: 250}}
+                ref={"delete_pool_modal"}
+            >
+                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                    DELETE Device
+                </Text>
+                <FormLabel containerStyle={{paddingBottom: 10}}>WARNING: This action cannot be undone. The device Wester's PC will be deleted permanently.</FormLabel>
+                <FormInput
+                    inputStyle={{color: 'black'}}
+                    value={this.state.delete_modal_text}
+                    placeholder="Type 'DELETE' to confirm."
+                    returnKeyType="done"
+                    onChangeText={(text) => this.setState({delete_modal_text: text})}
+                />
+                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <Button
+                        title="Cancel"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        onPress={() => this.refs.delete_pool_modal.close()}
+                    />
+                    <Button
+                        title="Delete"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        disabled={this.state.delete_modal_text != 'DELETE'}
+                        onPress={() => this.deletePool()}
+                    />
+                </View>
+            </Modal>
+
+            <Modal
+                style={{width: 350, height: 210}}
+                ref={"edit_pool_modal"}
+            >
+                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                    Device Name
+                </Text>
+                <FormLabel containerStyle={{paddingBottom: 10}}>Change device name</FormLabel>
+                    <FormInput
+                        inputStyle={{color: 'black'}}
+                        value={this.state.edit_modal_text}
+                        placeholder="Device name."
+                        returnKeyType="done"
+                        onChangeText={(text) => this.setState({edit_modal_text: text})}
+                    />
+                    <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                        <Button
+                            title="Cancel"
+                            backgroundColor={yellow600}
+                            color={blue900}
+                            fontSize={18}
+                            raised
+                            activeOpacity={0.5}
+                            onPress={() => this.refs.edit_pool_modal.close()}
+                        />
+                        <Button
+                            title="Apply"
+                            backgroundColor={yellow600}
+                            color={blue900}
+                            fontSize={18}
+                            raised
+                            activeOpacity={0.5}
+                            disabled={this.state.edit_modal_text == ''}
+                            onPress={() => this.editPool()}
+                        />
+                    </View>
+            </Modal>
+
         </SideMenu>
 
         );
@@ -198,6 +377,23 @@ const styles = StyleSheet.create({
     },
     menuButton: {
         marginLeft: 20,
-    }
+    },
+    modal: {
+        height: 270,
+        width: 350,
+    },
+    modal_inputWrap: {
+        alignItems: "center",
+        marginVertical: 10,
+        marginLeft: 20,
+        height: 40,
+        width: 250,
+        borderBottomWidth: 1,
+        borderBottomColor: "#CCC"
+    },
+    modal_input: {
+        flex: 1,
+        paddingHorizontal: 10,
+    },
 
 });

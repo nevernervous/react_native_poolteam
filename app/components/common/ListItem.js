@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
-import { View, StyleSheet, TouchableHighlight, Image, Platform ,Alert} from 'react-native';
+import { View, StyleSheet, TouchableHighlight, Image, Platform } from 'react-native';
 import {Text, Icon} from 'react-native-elements';
-import Menu, { MenuContext, MenuOptions, MenuOption, MenuTrigger } from 'react-native-menu';
 import fonts from './font';
 import normalize from './normalize';
 
@@ -27,10 +26,8 @@ const colors = {
 };
 
 
-const PoolListItem = ({
+const ListItem = ({
     onPress,
-    onPressEdit,
-    onPressDelete,
     title,
     leftIcon,
     rightIcon,
@@ -133,32 +130,14 @@ const PoolListItem = ({
                 {
                     !hideChevron && (
                         <View style={styles.chevronContainer}>
-
-                            <Menu onSelect={(value) => value == 1 ? onPressEdit() : onPressDelete()}>
-                                <MenuTrigger>
-                                    <Icon
-                                    type={rightIcon.type}
-                                    iconStyle={[ styles.chevron, rightIcon.style ]}
-                                    size={28}
-                                    name={rightIcon.name || 'chevron-right'}
-                                    color={rightIcon.color || chevronColor}
-                                    />
-                                </MenuTrigger>
-                                <MenuOptions optionsContainerStyle={{ width: 120 }}>
-                                    <MenuOption value={1} style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        <Icon
-                                            name="mode-edit"
-                                        />
-                                        <Text style={{paddingLeft: 10}}>EDIT</Text>
-                                    </MenuOption>
-                                    <MenuOption value={2} style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        <Icon
-                                            name="delete"
-                                        />
-                                        <Text style={{paddingLeft: 10}}>DELETE</Text>
-                                    </MenuOption>
-                                </MenuOptions>
-                            </Menu>
+                            <Icon
+                                type={rightIcon.type}
+                                iconStyle={[ styles.chevron, rightIcon.style ]}
+                                size={28}
+                                name={rightIcon.name || 'chevron-right'}
+                                color={rightIcon.color || chevronColor}
+                                onPress={rightIcon.onPress}
+                            />
                         </View>
                     )
                 }
@@ -171,7 +150,7 @@ const PoolListItem = ({
     )
 }
 
-PoolListItem.defaultProps = {
+ListItem.defaultProps = {
     underlayColor: 'white',
     chevronColor: colors.grey4,
     rightIcon: {name: 'chevron-right'},
@@ -179,13 +158,11 @@ PoolListItem.defaultProps = {
     roundAvatar: false
 }
 
-PoolListItem.propTypes = {
+ListItem.propTypes = {
     title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     avatar: PropTypes.any,
     icon: PropTypes.any,
     onPress: PropTypes.func,
-    onPressEdit: PropTypes.func,
-    onPressDelete: PropTypes.func,
     rightIcon: PropTypes.object,
     underlayColor: PropTypes.string,
     subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
@@ -258,4 +235,4 @@ styles = StyleSheet.create({
     }
 })
 
-export default PoolListItem
+export default ListItem

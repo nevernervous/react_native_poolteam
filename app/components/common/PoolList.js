@@ -30,13 +30,18 @@ export default class PoolList extends Component {
         this.props.onPressPoolItem(pool);
     }
 
-    onPressMore(pool) {
+    onPressDeletePool(pool) {
+        this.props.onPressDeletePool(pool);
+    }
+
+    onPressEditPool(pool) {
+        this.props.onPressEditPool(pool);
     }
 
     render() {
         return(
-            <TouchableWithoutFeedback delayPressIn={0} onPressIn={()=> this.refs.popupMenu.closeMenu()}>
-            <ScrollView style={styles.container} >
+            <MenuContext style={styles.container}>
+            <ScrollView >
                 <View>
                     <List>
                         {
@@ -47,36 +52,20 @@ export default class PoolList extends Component {
                                     avatar={require('../../img/icon_pool.png')}
                                     subtitle={pool.serialnumber}
                                     onPress={() => this.onPressPoolItem(pool)}
+                                    onPressEdit={() => this.onPressEditPool(pool)}
+                                    onPressDelete={() => this.onPressDeletePool(pool)}
                                     underlayColor={grey300}
-                                    rightIcon={{name:'more-vert', onPress: () => this.onPressMore(pool)}}
-                                    style={{flexDirection:'row'}}
+                                    rightIcon={{name:'more-vert'}}
+                                    style={{flexDirection:'row', flex: 1}}
                                 >
                                 </PoolListItem>
+
                             ))
                         }
                     </List>
                 </View>
-
-                {/*<View>*/}
-                {/*<MenuContext ref={'popupMenu'}>*/}
-
-                        {/*<Menu onSelect={(value) => Alert.alert(`User selected the number ${value}`)}>*/}
-                            {/*<MenuTrigger>*/}
-                                {/*<Text style={{ fontSize: 20 }}>&#8942;</Text>*/}
-                            {/*</MenuTrigger>*/}
-                            {/*<MenuOptions>*/}
-                                {/*<MenuOption value={1}>*/}
-                                    {/*<Text>One</Text>*/}
-                                {/*</MenuOption>*/}
-                                {/*<MenuOption value={2}>*/}
-                                    {/*<Text>Two</Text>*/}
-                                {/*</MenuOption>*/}
-                            {/*</MenuOptions>*/}
-                        {/*</Menu>*/}
-                {/*</MenuContext>*/}
-                {/*</View>*/}
             </ScrollView>
-            </TouchableWithoutFeedback>
+            </MenuContext>
         );
     }
 }

@@ -43,7 +43,7 @@ export default class App extends Component {
                 style = {styles.container}
                 initialRoute={{name: 'login'}}
                 renderScene={this.renderScene}
-                configureScene={() => {return Navigator.SceneConfigs.PushFromRight;}}
+                configureScene={() => ({...Navigator.SceneConfigs.PushFromRight, gestures: null})}
                 onWillFocus={this._onWillFocus}
             />
 
