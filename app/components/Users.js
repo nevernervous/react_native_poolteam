@@ -10,11 +10,10 @@ import {
 } from 'react-native';
 
 import {Text, Icon, List, ListItem} from 'react-native-elements';
-import {Divider} from 'react-native-material-design';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, blue400, green800, red500, lime500} from './common/color';
+import {yellow600, blue900, grey300, red500, lime500} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
 
@@ -38,6 +37,7 @@ export default class Users extends Component {
     }
 
     componentWillFocus() {
+        this.mounted = true;
         this.pollUsers();
     }
 
@@ -62,6 +62,7 @@ export default class Users extends Component {
     }
 
     onPressUserItem(index) {
+        this.mounted = false;
         this.props.navigator.push({ name: 'userdetail', user: this.state.users[index]});
     }
 
@@ -123,6 +124,9 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         marginLeft:10,
+    },
+    menuButton: {
+        marginLeft: 20,
     },
     headerText: {
         color: yellow600,

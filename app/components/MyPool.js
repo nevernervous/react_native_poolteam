@@ -22,7 +22,7 @@ import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 30000;
+const HA_POLL_INTERVAL_MS = 1000;
 
 export default class MyPool extends Component {
     constructor(props) {
@@ -31,7 +31,7 @@ export default class MyPool extends Component {
             isMenuOpen: false,
             pools: store.pools || null,
             timeoutId: null,
-            errorText: null,
+            // errorText: null,
             new_device_name: '',
             new_device_sn: '',
             delete_modal_text: '',
@@ -42,7 +42,7 @@ export default class MyPool extends Component {
 
     componentWillMount() {
         this.mounted = true;
-        this.polllPools();
+        this.pollPools();
     }
 
     componentWillUnmount() {
@@ -51,11 +51,16 @@ export default class MyPool extends Component {
 
     }
 
-    polllPools() {
+    componentWillFocus() {
+        this.mounted = true;
+        this.pollPools();
+    }
+
+    pollPools() {
         api.getPools()
             .then(response => {
                 if(!this.mounted) return;
-                const timeoutId = setTimeout(() => this.polllPools(), HA_POLL_INTERVAL_MS);
+                const timeoutId = setTimeout(() => this.pollPools(), HA_POLL_INTERVAL_MS);
                 if(response.status === 304) {
                     this.setState({timeoutId});
                 }else {
@@ -71,12 +76,11 @@ export default class MyPool extends Component {
                if(!this.mounted) return;
                store.pools = null;
                this.setState({
-                   errorText: err.toString(),
+                   // errorText: err.toString(),
                    pools: null,
                    timeoutId: null
                });
-               if(err.toString() == '403')
-                   this.props.navigator.popToTop();
+               this.props.navigator.popToTop();
             });
     }
 
@@ -104,10 +108,13 @@ export default class MyPool extends Component {
                 break;
             case 'Logout':
                 this.props.navigator.pop();
+                break;
         }
+        this.mounted = false;
     }
 
     onPressPoolItem(pool) {
+        this.mounted = false;
         this.props.navigator.push({ name: 'pool', serialNumber: pool.serialnumber});
     }
 
@@ -118,9 +125,7 @@ export default class MyPool extends Component {
                 this.polllPools();
             })
             .catch(err =>{
-                Alert.alert('Error', 'This device did not upload any data.');
-                //     Alert.alert('Error', err.toString());
-
+                Alert.alert('Failed', 'This device did not upload any data.');
                 }
             );
     }
@@ -133,14 +138,14 @@ export default class MyPool extends Component {
     deletePool() {
         api.removePool(this.state.selected_pool.serialnumber)
             .then(response => {
-                if (response.payload.status_code == 204){
-                    console.log("Successfully deleted...");
-                }
+                // if (response.payload.status_code == 204){
+                //     console.log("Successfully deleted...");
+                // }
                 this.refs.delete_pool_modal.close();
                 this.polllPools();
             })
             .catch(err => {
-                Alert.alert('Error', err.toString());
+                Alert.alert('Failed', 'Please try again.');
             });
     }
 
@@ -152,16 +157,17 @@ export default class MyPool extends Component {
     editPool() {
         api.updatePoolName(this.state.selected_pool.serialnumber, this.state.edit_modal_text)
             .then(response => {
-                if (response.payload.status_code == 204){
-                    console.log("Successfully updated...");
-                }
+                // if (response.payload.status_code == 204){
+                //     console.log("Successfully updated...");
+                // }
                 this.refs.edit_pool_modal.close();
                 this.polllPools();
             })
             .catch(err => {
-                Alert.alert('Error', err.toString());
+                Alert.alert('Failed', 'Please try again.');
             });
     }
+
     onCloseDialog() {
         this.setState({new_device_name: '', new_device_sn: ''});
     }
@@ -181,6 +187,9 @@ export default class MyPool extends Component {
                 onPressEditPool={this.onPressEditPool.bind(this)}
             />;
 
+        return <Text h4 style={{paddingVertical: 10, paddingHorizontal: 10}}>
+            {store.admin === 'admin'? "You don't have any Pool. \nPlease add POOL." : "You don't have any Pool. \nPlease contact administrator to add Pool."}
+            </Text>
     }
 
     render() {

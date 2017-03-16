@@ -27,7 +27,8 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: "a@a.com",
+            // email: "a@a.com",
+            email: "rpiguru@techie.com",
             password: "12345678",
             isAuthenticating: false,
             recoveryEmail: '',
@@ -57,13 +58,13 @@ export default class Login extends Component {
 
         // Check if this email is already registered or not
         if(this.state.recoveryEmail == '') {
-            Alert.alert('Warning', 'Enter the email.');
+            Alert.alert('PoolTeam', 'Please enter the email.');
             return;
         }
         this.refs.forgot_password_modal.close();
         api.request_recover(this.state.recoveryEmail)
             .then(response => {
-                Alert.alert('Success', 'Password recovery email sent, please check your mailbox.');
+                Alert.alert('PoolTeam', 'Password recovery email sent. please check your mailbox.');
             })
             .catch(err => {
                 Alert.alert('Fail', 'User email is not registered.');

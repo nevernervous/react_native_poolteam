@@ -5,6 +5,7 @@ import {
     StyleSheet,
     Dimensions,
     ListView,
+    ScrollView,
 } from 'react-native';
 
 import {Text, Icon, Button} from 'react-native-elements';
@@ -197,7 +198,7 @@ export default class Sensor extends Component {
                     }
                 </View>
 
-                <View tabLabel='Table'>
+                <ScrollView tabLabel='Table'>
                     {this.values == null ?
                         <LoadingIndicator center={false}/> :
                         this.values.length > 1?
@@ -205,7 +206,7 @@ export default class Sensor extends Component {
                             dataSource={this.values}
                         /> : <Text style={{marginTop: 10}} h3>No Data</Text>
                     }
-                </View>
+                </ScrollView>
             </ScrollableTabView>
         );
     }

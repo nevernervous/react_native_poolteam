@@ -424,6 +424,9 @@ const styles = StyleSheet.create({
         color: yellow600,
         paddingLeft: 10,
     },
+    menuButton: {
+        marginLeft: 20,
+    },
     content: {
         marginTop: 10,
         marginLeft:20,

@@ -16,7 +16,7 @@ import Logo from './common/Logo';
 import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 30000;
+const HA_POLL_INTERVAL_MS = 1000;
 
 function getMuranoErrorText() {
     return `Murano Error: It appears this serial number was either not
@@ -31,10 +31,7 @@ export default class Pool extends Component {
         let pool = null;
         let errorText = null;
         if (store.pools) {
-            console.log(this.props.serialNumber);
-            console.log(store.pools);
             pool = store.pools.filter(wall => wall.serialnumber == this.props.serialNumber)[0];
-            console.log(pool);
             // if (pool && (pool.state === null || !pool.hasOwnProperty('state') || pool.state === "undefined")) {
             //     pool = null;
             //     errorText = getMuranoErrorText();
@@ -55,9 +52,13 @@ export default class Pool extends Component {
     }
 
     componentWillUnmount() {
-        console.log('pool unmounted');
         this.mounted = false;
         clearTimeout(this.state.timeoutId);
+    }
+
+    componentWillFocus() {
+        this.mounted = true;
+        this.pollPools();
     }
 
     pollPools() {
@@ -93,6 +94,7 @@ export default class Pool extends Component {
     }
 
     onPressInfoItem(alias) {
+        this.mounted = false;
         this.props.navigator.push({name: 'sensor', alias: alias, poolName:this.state.poolName, serialNumber:this.props.serialNumber});
 
     }
