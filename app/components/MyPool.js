@@ -122,7 +122,7 @@ export default class MyPool extends Component {
         api.addPool(this.state.new_device_name, this.state.new_device_sn)
             .then(() => {
                 this.refs.add_pool_modal.close()
-                this.polllPools();
+                this.pollPools();
             })
             .catch(err =>{
                 Alert.alert('Failed', 'This device did not upload any data.');
@@ -142,7 +142,7 @@ export default class MyPool extends Component {
                 //     console.log("Successfully deleted...");
                 // }
                 this.refs.delete_pool_modal.close();
-                this.polllPools();
+                this.pollPools();
             })
             .catch(err => {
                 Alert.alert('Failed', 'Please try again.');
