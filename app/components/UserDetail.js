@@ -216,16 +216,18 @@ export default class UserDetail extends Component {
                 ref={"modal"}
                 onClosed={() => this.onCloseDialog()}
             >
-                <Text h4 style={{marginLeft: 20, marginVertical:15}}>{modal_title}</Text>
-                <FormInput
-                    value={this.state.txt_dialog}
-                    placeholder={placeholder}
-                    inputStyle={{color: 'black'}}
-                    containerStyle={styles.modal_input}
-                    returnKeyType="done"
-                    onChangeText={this.onChangeTextDialog.bind(this)}
-                />
-                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                <View style={{flex: 1}}>
+                    <Text h4 style={{marginLeft: 20, marginVertical:15}}>{modal_title}</Text>
+                    <FormInput
+                        value={this.state.txt_dialog}
+                        placeholder={placeholder}
+                        inputStyle={{color: 'black'}}
+                        containerStyle={styles.modal_input}
+                        returnKeyType="done"
+                        onChangeText={this.onChangeTextDialog.bind(this)}
+                    />
+                </View>
+                <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                     <Button
                         title="Cancel"
                         backgroundColor={yellow600}

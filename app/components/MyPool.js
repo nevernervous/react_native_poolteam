@@ -238,26 +238,28 @@ export default class MyPool extends Component {
                 ref={"add_pool_modal"}
                 onClosed={() => this.onCloseDialog()}
             >
-                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
-                    New Device
-                </Text>
-                <FormLabel>Name</FormLabel>
-                <FormInput
-                    inputStyle={{color: 'black'}}
-                    value={this.state.new_device_name}
-                    placeholder="E.g. Living Room Lamp"
-                    returnKeyType="done"
-                    onChangeText={(text) => this.setState({new_device_name: text})}
-                />
-                <FormLabel>Identity / Serial Number</FormLabel>
-                <FormInput
-                    inputStyle={{color: 'black'}}
-                    placeholder="E.g. abcde12345"
-                    value={this.state.new_device_sn}
-                    returnKeyType="done"
-                    onChangeText={(text) => this.setState({new_device_sn: text})}
-                />
-                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                <View style={{flex: 1}}>
+                    <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                        New Device
+                    </Text>
+                    <FormLabel>Name</FormLabel>
+                    <FormInput
+                        inputStyle={{color: 'black'}}
+                        value={this.state.new_device_name}
+                        placeholder="E.g. Living Room Lamp"
+                        returnKeyType="done"
+                        onChangeText={(text) => this.setState({new_device_name: text})}
+                    />
+                    <FormLabel>Identity / Serial Number</FormLabel>
+                    <FormInput
+                        inputStyle={{color: 'black'}}
+                        placeholder="E.g. abcde12345"
+                        value={this.state.new_device_sn}
+                        returnKeyType="done"
+                        onChangeText={(text) => this.setState({new_device_sn: text})}
+                    />
+                </View>
+                <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                     <Button
                         title="Cancel"
                         backgroundColor={yellow600}
@@ -284,18 +286,20 @@ export default class MyPool extends Component {
                 style={{width: 350, height: 250}}
                 ref={"delete_pool_modal"}
             >
-                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
-                    DELETE Device
-                </Text>
-                <FormLabel containerStyle={{paddingBottom: 10}}>WARNING: This action cannot be undone. The device Wester's PC will be deleted permanently.</FormLabel>
-                <FormInput
-                    inputStyle={{color: 'black'}}
-                    value={this.state.delete_modal_text}
-                    placeholder="Type 'DELETE' to confirm."
-                    returnKeyType="done"
-                    onChangeText={(text) => this.setState({delete_modal_text: text})}
-                />
-                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                <View style={{flex: 1}}>
+                    <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                        DELETE Device
+                    </Text>
+                    <FormLabel containerStyle={{paddingBottom: 10}}>WARNING: This action cannot be undone. The device Wester's PC will be deleted permanently.</FormLabel>
+                    <FormInput
+                        inputStyle={{color: 'black'}}
+                        value={this.state.delete_modal_text}
+                        placeholder="Type 'DELETE' to confirm."
+                        returnKeyType="done"
+                        onChangeText={(text) => this.setState({delete_modal_text: text})}
+                    />
+                </View>
+                <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                     <Button
                         title="Cancel"
                         backgroundColor={yellow600}
@@ -322,18 +326,20 @@ export default class MyPool extends Component {
                 style={{width: 350, height: 210}}
                 ref={"edit_pool_modal"}
             >
-                <Text h4 style={{marginLeft: 20, marginVertical:10}}>
-                    Device Name
-                </Text>
-                <FormLabel containerStyle={{paddingBottom: 10}}>Change device name</FormLabel>
-                <FormInput
-                    inputStyle={{color: 'black'}}
-                    value={this.state.edit_modal_text}
-                    placeholder="Device name."
-                    returnKeyType="done"
-                    onChangeText={(text) => this.setState({edit_modal_text: text})}
-                />
-                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                <View style={{flex: 1}}>
+                    <Text h4 style={{marginLeft: 20, marginVertical:10}}>
+                        Device Name
+                    </Text>
+                    <FormLabel containerStyle={{paddingBottom: 10}}>Change device name</FormLabel>
+                    <FormInput
+                        inputStyle={{color: 'black'}}
+                        value={this.state.edit_modal_text}
+                        placeholder="Device name."
+                        returnKeyType="done"
+                        onChangeText={(text) => this.setState({edit_modal_text: text})}
+                    />
+                </View>
+                <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                     <Button
                         title="Cancel"
                         backgroundColor={yellow600}
@@ -387,9 +393,10 @@ const styles = StyleSheet.create({
     },
 
     addButton: {
-        position: 'absolute',
-        top: height - 70,
-        left: width - 70,
+        // position: 'absolute',
+        // top: height - 70,
+        // left: width - 70,
+        alignSelf:'flex-end'
     },
     menuButton: {
         marginLeft: 20,

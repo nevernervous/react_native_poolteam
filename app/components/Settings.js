@@ -321,16 +321,18 @@ export default class Settings extends Component {
                     ref={"delete_alert_modal"}
                     onClosed={() => this.onCloseDialog()}
                 >
-                    <Text h4 style={{marginLeft: 20, marginVertical:20}}>Delete Alert {this.state.alert_type}</Text>
-                    <FormInput
-                        value={this.state.txt_dialog}
-                        onChangeText={this.onChangeTextDeleteDialog.bind(this)}
-                        placeholder="Type 'DELETE' to confirm"
-                        inputStyle={{color: 'black'}}
-                        containerStyle={styles.modal_input}
-                        returnKeyType="done"
-                    />
-                    <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <View style={{flex: 1}}>
+                        <Text h4 style={{marginLeft: 20, marginVertical:20}}>Delete Alert {this.state.alert_type}</Text>
+                        <FormInput
+                            value={this.state.txt_dialog}
+                            onChangeText={this.onChangeTextDeleteDialog.bind(this)}
+                            placeholder="Type 'DELETE' to confirm"
+                            inputStyle={{color: 'black'}}
+                            containerStyle={styles.modal_input}
+                            returnKeyType="done"
+                        />
+                    </View>
+                    <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                         <Button
                             title="Cancel"
                             backgroundColor={yellow600}
@@ -360,18 +362,20 @@ export default class Settings extends Component {
                     ref={"add_alert_modal"}
                     onClosed={() => this.onCloseDialog()}
                 >
-                    <Text h4 style={{marginLeft: 20, marginVertical:20}}>
-                        {(this.state.alert_type != 'sender_phone') ? `Add Alert ${this.state.alert_type}` : `Edit SMS Sender's Phone #` }
-                    </Text>
-                    <FormInput
-                        value={this.state.txt_dialog}
-                        onChangeText={this.onChangeTextAddDialog.bind(this)}
-                        placeholder={ "Input alert " + this.state.alert_type}
-                        inputStyle={{color: 'black'}}
-                        containerStyle={styles.modal_input}
-                        returnKeyType="done"
-                    />
-                    <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <View style={{flex: 1}}>
+                        <Text h4 style={{marginLeft: 20, marginVertical:20}}>
+                            {(this.state.alert_type != 'sender_phone') ? `Add Alert ${this.state.alert_type}` : `Edit SMS Sender's Phone #` }
+                        </Text>
+                        <FormInput
+                            value={this.state.txt_dialog}
+                            onChangeText={this.onChangeTextAddDialog.bind(this)}
+                            placeholder={ "Input alert " + this.state.alert_type}
+                            inputStyle={{color: 'black'}}
+                            containerStyle={styles.modal_input}
+                            returnKeyType="done"
+                        />
+                    </View>
+                    <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                         <Button
                             title="Cancel"
                             backgroundColor={yellow600}

@@ -81,13 +81,11 @@ export default class Sensor extends Component {
     }
 
     componentWillMount() {
-        console.log('Sensor mounted');
         this.mounted = true;
         this.pollSensorData();
     }
 
     componentWillUnmount() {
-        console.log('Sensor unmounted');
         this.mounted = false;
         clearTimeout(this.state.timeoutId);
     }
@@ -244,13 +242,13 @@ export default class Sensor extends Component {
                        ref={"calendarModal"}
                 >
                     <View style={{alignItems:'center', flex: 1}}>
-                    <CalendarPicker
-                        selectedDate={this.state.date}
-                        onDateChange={(date) => this.date = date}
-                        screenWidth={100}
-                        selectedBackgroundColor={'#5ce600'} />
+                        <CalendarPicker
+                            selectedDate={this.state.date}
+                            onDateChange={(date) => this.date = date}
+                            screenWidth={100}
+                            selectedBackgroundColor={'#5ce600'} />
                     </View>
-                    <View style={{flexDirection: "row", alignSelf:'flex-end'}}>
+                    <View style={{flexDirection: "row", alignSelf:'flex-end', paddingBottom: 10}}>
                         <Button
                             title="Cancel"
                             backgroundColor={yellow600}
@@ -322,9 +320,9 @@ const styles = StyleSheet.create({
         borderBottomColor: "#CCC"
     },
     modal_calendar: {
-        marginTop: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // marginTop: 30,
+        // justifyContent: 'center',
+        // alignItems: 'center',
         height: 350,
         width: width,
     },
