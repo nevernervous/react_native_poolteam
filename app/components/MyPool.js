@@ -231,7 +231,6 @@ export default class MyPool extends Component {
                     }
                 </View>
 
-                {/*NoteticationSystem add*/}
             </View>
             <Modal
                 style={styles.modal}
@@ -373,7 +372,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: grey300,
-
     },
     header: {
         flexDirection: 'row',
@@ -396,6 +394,7 @@ const styles = StyleSheet.create({
         // position: 'absolute',
         // top: height - 70,
         // left: width - 70,
+        paddingBottom: 10,
         alignSelf:'flex-end'
     },
     menuButton: {
