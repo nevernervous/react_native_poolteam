@@ -161,7 +161,7 @@ export default class MyPool extends Component {
                 //     console.log("Successfully updated...");
                 // }
                 this.refs.edit_pool_modal.close();
-                this.polllPools();
+                this.pollPools();
             })
             .catch(err => {
                 Alert.alert('Failed', 'Please try again.');
