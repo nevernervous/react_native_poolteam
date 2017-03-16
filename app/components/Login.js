@@ -6,14 +6,13 @@ import {
     Text,
     Dimensions,
     Image,
-    TextInput,
     TouchableOpacity,
     TouchableWithoutFeedback,
 } from 'react-native';
 
 import dismissKeyboard from 'react-native-dismiss-keyboard';
 
-import {Button} from 'react-native-elements';
+import {Button, FormInput,} from 'react-native-elements';
 import Modal from 'react-native-modalbox';
 import LoadingIndicator from './common/LoadingIndicator';
 import {yellow600, blue900} from './common/color';
@@ -27,8 +26,8 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // email: "a@a.com",
-            email: "rpiguru@techie.com",
+            email: "a@a.com",
+            // email: "rpiguru@techie.com",
             password: "12345678",
             isAuthenticating: false,
             recoveryEmail: '',
@@ -105,31 +104,29 @@ export default class Login extends Component {
                         <Text style={{fontSize: 40}} >Login</Text>
                     </View>
 
-                    <View style={{paddingTop: 10, alignItems: "center"}}>
-                        <View style={styles.inputWrap}>
-                            <TextInput
-                                ref="1"
-                                value={this.state.email}
-                                onChangeText={(text) => this.setState({email: text})}
-                                placeholder="Email Address"
-                                style={styles.input}
-                                keyboardType="email-address"
-                                returnKeyType="next"
-                                onSubmitEditing={() => this.focusNextField('2')}
-                            />
-                        </View>
-                        <View style={styles.inputWrap}>
-                            <TextInput
-                                ref="2"
-                                value={this.state.password}
-                                onChangeText={(text) => this.setState({password: text})}
-                                placeholder="Password"
-                                style={styles.input}
-                                secureTextEntry
-                                returnKeyType="done"
-                                onSubmitEditing={() => this.onPressLogin()}
-                            />
-                        </View>
+                    <View style={{paddingTop: 10}}>
+                        <FormInput
+                            ref="1"
+                            value={this.state.email}
+                            onChangeText={(text) => this.setState({email: text})}
+                            inputStyle={{color: 'black'}}
+                            containerStyle={styles.input}
+                            placeholder="Email Address"
+                            keyboardType="email-address"
+                            returnKeyType="next"
+                            onSubmitEditing={() => this.focusNextField('2')}
+                        />
+                        <FormInput
+                            ref="2"
+                            value={this.state.password}
+                            onChangeText={(text) => this.setState({password: text})}
+                            placeholder="Password"
+                            inputStyle={{color: 'black'}}
+                            containerStyle={styles.input}
+                            secureTextEntry
+                            returnKeyType="done"
+                            onSubmitEditing={() => this.onPressLogin()}
+                        />
                     </View>
 
                     <TouchableOpacity
@@ -168,12 +165,12 @@ export default class Login extends Component {
                         ref={"forgot_password_modal"}
                         onClosed={() => this.setState({recoveryEmail: ''})}
                     >
-                        <View style={styles.modal_inputWrap}>
-                            <TextInput
+                        <View style={{paddingTop: 20, paddingBottom: 20}}>
+                            <FormInput
                                 value={this.state.recoveryEmail}
                                 onChangeText={(text) => this.setState({recoveryEmail: text})}
+                                inputStyle={{color: 'black'}}
                                 placeholder="Recovery Email Address"
-                                style={styles.modal_input}
                                 keyboardType="email-address"
                                 returnKeyType="done"
                                 onSubmitEditing={() => this.onPressSend()}
@@ -220,26 +217,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingTop: 100
     },
-    inputWrap: {
-        alignItems: "center",
+    input: {
         marginVertical: 10,
-        height: 40,
-        width: width - 50,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
-    iconWrap: {
-        paddingHorizontal: 7,
-        alignItems: "center",
-        justifyContent: "center",
+        paddingHorizontal: 10,
     },
     icon: {
         height: 20,
         width: 20,
-    },
-    input: {
-        flex: 1,
-        paddingHorizontal: 10,
     },
     LoginButton: {
         height: 40,
@@ -258,21 +242,7 @@ const styles = StyleSheet.create({
         paddingLeft: 5,
     },
     modal: {
-        justifyContent: 'center',
-        alignItems: 'center',
         height: 130,
         width: 300,
-    },
-    modal_inputWrap: {
-        alignItems: "center",
-        marginVertical: 10,
-        height: 40,
-        width: 250,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
-    modal_input: {
-        flex: 1,
-        paddingHorizontal: 10,
     },
 });

@@ -5,13 +5,12 @@ import {
     Text,
     Dimensions,
     Image,
-    TextInput,
     TouchableOpacity,
     Alert,
     TouchableWithoutFeedback,
 } from 'react-native';
 
-import {Button} from 'react-native-elements';
+import {Button, FormInput} from 'react-native-elements';
 import dismissKeyboard from 'react-native-dismiss-keyboard';
 import {yellow600, blue900} from './common/color';
 import api from '../api';
@@ -105,50 +104,46 @@ export default class Signup extends Component {
                     </View>
 
 
-                    <View style={{paddingTop: 10, alignItems: "center"}}>
-                        <View style={styles.inputWrap}>
-                            <TextInput
+                    <View style={{paddingTop: 10}}>
+                            <FormInput
                                 ref="1"
                                 placeholder="User Name"
-                                style={styles.input}
+                                containerStyle={styles.input}
+                                inputStyle={{color: 'black'}}
                                 onChangeText={(text) => this.setState({userName: text})}
                                 returnKeyType="next"
                                 onSubmitEditing={() => this.focusNextField('2')}
                             />
-                        </View>
-                        <View style={styles.inputWrap}>
-                            <TextInput
+                            <FormInput
                                 ref="2"
                                 placeholder="Email Address"
-                                style={styles.input}
+                                containerStyle={styles.input}
+                                inputStyle={{color: 'black'}}
                                 keyboardType="email-address"
                                 onChangeText={(text) => this.setState({email: text})}
                                 returnKeyType="next"
                                 onSubmitEditing={() => this.focusNextField('3')}
                             />
-                        </View>
-                        <View style={styles.inputWrap}>
-                            <TextInput
+                            <FormInput
                                 ref="3"
                                 placeholder="Password"
-                                style={styles.input}
+                                containerStyle={styles.input}
+                                inputStyle={{color: 'black'}}
                                 secureTextEntry
                                 returnKeyType="next"
                                 onChangeText={(text) => this.setState({password: text})}
                                 onSubmitEditing={() => this.focusNextField('4')}
                             />
-                        </View>
-                        <View style={styles.inputWrap}>
-                            <TextInput
+                            <FormInput
                                 ref="4"
                                 placeholder="Confirm Password"
-                                style={styles.input}
+                                containerStyle={styles.input}
+                                inputStyle={{color: 'black'}}
                                 secureTextEntry
                                 returnKeyType="done"
                                 onChangeText={(text) => this.setState({confirmPassword: text})}
                                 onSubmitEditing={() => this.onPressSignup()}
                             />
-                        </View>
                     </View>
 
                     <View style={{alignItems: "center", paddingVertical: 10}}>
@@ -187,14 +182,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingTop: 100
     },
-    inputWrap: {
-        alignItems: "center",
-        marginVertical: 10,
-        height: 40,
-        width: width - 50,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
+
     iconWrap: {
         paddingHorizontal: 7,
         alignItems: "center",
@@ -205,7 +193,7 @@ const styles = StyleSheet.create({
         width: 20,
     },
     input: {
-        flex: 1,
+        marginVertical: 10,
         paddingHorizontal: 10,
     },
     SignupButton: {

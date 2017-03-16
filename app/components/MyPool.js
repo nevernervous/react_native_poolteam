@@ -326,34 +326,34 @@ export default class MyPool extends Component {
                     Device Name
                 </Text>
                 <FormLabel containerStyle={{paddingBottom: 10}}>Change device name</FormLabel>
-                    <FormInput
-                        inputStyle={{color: 'black'}}
-                        value={this.state.edit_modal_text}
-                        placeholder="Device name."
-                        returnKeyType="done"
-                        onChangeText={(text) => this.setState({edit_modal_text: text})}
+                <FormInput
+                    inputStyle={{color: 'black'}}
+                    value={this.state.edit_modal_text}
+                    placeholder="Device name."
+                    returnKeyType="done"
+                    onChangeText={(text) => this.setState({edit_modal_text: text})}
+                />
+                <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
+                    <Button
+                        title="Cancel"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        onPress={() => this.refs.edit_pool_modal.close()}
                     />
-                    <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
-                        <Button
-                            title="Cancel"
-                            backgroundColor={yellow600}
-                            color={blue900}
-                            fontSize={18}
-                            raised
-                            activeOpacity={0.5}
-                            onPress={() => this.refs.edit_pool_modal.close()}
-                        />
-                        <Button
-                            title="Apply"
-                            backgroundColor={yellow600}
-                            color={blue900}
-                            fontSize={18}
-                            raised
-                            activeOpacity={0.5}
-                            disabled={this.state.edit_modal_text == ''}
-                            onPress={() => this.editPool()}
-                        />
-                    </View>
+                    <Button
+                        title="Apply"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={18}
+                        raised
+                        activeOpacity={0.5}
+                        disabled={this.state.edit_modal_text == ''}
+                        onPress={() => this.editPool()}
+                    />
+                </View>
             </Modal>
 
         </SideMenu>
@@ -397,19 +397,6 @@ const styles = StyleSheet.create({
     modal: {
         height: 270,
         width: 350,
-    },
-    modal_inputWrap: {
-        alignItems: "center",
-        marginVertical: 10,
-        marginLeft: 20,
-        height: 40,
-        width: 250,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
-    modal_input: {
-        flex: 1,
-        paddingHorizontal: 10,
     },
 
 });

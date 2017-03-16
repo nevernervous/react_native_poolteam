@@ -9,10 +9,9 @@ import {
     ListView,
     Platform,
     TouchableOpacity,
-    TextInput,
 } from 'react-native';
 
-import {Text, Icon, Card,ListItem, Button} from 'react-native-elements';
+import {Text, Icon, Card,ListItem, Button, FormInput,} from 'react-native-elements';
 import {Divider} from 'react-native-material-design';
 import Modal from 'react-native-modalbox';
 import DeviceListItem from './common/ListItem';
@@ -218,15 +217,14 @@ export default class UserDetail extends Component {
                 onClosed={() => this.onCloseDialog()}
             >
                 <Text h4 style={{marginLeft: 20, marginVertical:15}}>{modal_title}</Text>
-                <View style={styles.modal_inputWrap}>
-                    <TextInput
-                        value={this.state.txt_dialog}
-                        placeholder={placeholder}
-                        style={styles.modal_input}
-                        returnKeyType="done"
-                        onChangeText={this.onChangeTextDialog.bind(this)}
-                    />
-                </View>
+                <FormInput
+                    value={this.state.txt_dialog}
+                    placeholder={placeholder}
+                    inputStyle={{color: 'black'}}
+                    containerStyle={styles.modal_input}
+                    returnKeyType="done"
+                    onChangeText={this.onChangeTextDialog.bind(this)}
+                />
                 <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
                     <Button
                         title="Cancel"
@@ -320,18 +318,9 @@ const styles = StyleSheet.create({
         height: 220,
         width: 350,
     },
-    modal_inputWrap: {
-        alignItems: "center",
-        marginVertical: 10,
-        marginLeft: 20,
-        height: 40,
-        width: 250,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
     modal_input: {
-        flex: 1,
         paddingHorizontal: 10,
+        paddingVertical: 10,
     },
 });
 

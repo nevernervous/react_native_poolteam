@@ -5,10 +5,9 @@ import {
     StyleSheet,
     Dimensions,
     ScrollView,
-    TextInput,
 } from 'react-native';
 
-import {Text, Icon, Button, List} from 'react-native-elements';
+import {Text, Icon, Button, FormInput} from 'react-native-elements';
 import { Divider } from 'react-native-material-design';
 import Modal from 'react-native-modalbox';
 import store from '../store';
@@ -323,15 +322,14 @@ export default class Settings extends Component {
                     onClosed={() => this.onCloseDialog()}
                 >
                     <Text h4 style={{marginLeft: 20, marginVertical:20}}>Delete Alert {this.state.alert_type}</Text>
-                    <View style={styles.modal_inputWrap}>
-                        <TextInput
-                            value={this.state.txt_dialog}
-                            onChangeText={this.onChangeTextDeleteDialog.bind(this)}
-                            placeholder="Type 'DELETE' to confirm"
-                            style={styles.modal_input}
-                            returnKeyType="done"
-                        />
-                    </View>
+                    <FormInput
+                        value={this.state.txt_dialog}
+                        onChangeText={this.onChangeTextDeleteDialog.bind(this)}
+                        placeholder="Type 'DELETE' to confirm"
+                        inputStyle={{color: 'black'}}
+                        containerStyle={styles.modal_input}
+                        returnKeyType="done"
+                    />
                     <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
                         <Button
                             title="Cancel"
@@ -365,15 +363,14 @@ export default class Settings extends Component {
                     <Text h4 style={{marginLeft: 20, marginVertical:20}}>
                         {(this.state.alert_type != 'sender_phone') ? `Add Alert ${this.state.alert_type}` : `Edit SMS Sender's Phone #` }
                     </Text>
-                    <View style={styles.modal_inputWrap}>
-                        <TextInput
-                            value={this.state.txt_dialog}
-                            onChangeText={this.onChangeTextAddDialog.bind(this)}
-                            placeholder={ "Input alert " + this.state.alert_type}
-                            style={styles.modal_input}
-                            returnKeyType="done"
-                        />
-                    </View>
+                    <FormInput
+                        value={this.state.txt_dialog}
+                        onChangeText={this.onChangeTextAddDialog.bind(this)}
+                        placeholder={ "Input alert " + this.state.alert_type}
+                        inputStyle={{color: 'black'}}
+                        containerStyle={styles.modal_input}
+                        returnKeyType="done"
+                    />
                     <View style={{flexDirection: "row", alignSelf:'flex-end', marginTop: 20}}>
                         <Button
                             title="Cancel"
@@ -445,17 +442,8 @@ const styles = StyleSheet.create({
         height: 220,
         width: 350,
     },
-    modal_inputWrap: {
-        alignItems: "center",
-        marginVertical: 10,
-        marginLeft: 20,
-        height: 40,
-        width: 250,
-        borderBottomWidth: 1,
-        borderBottomColor: "#CCC"
-    },
     modal_input: {
-        flex: 1,
+        paddingVertical: 10,
         paddingHorizontal: 10,
     },
 
