@@ -15,10 +15,11 @@
     "react-native-datatable": "0.0.8",
     "react-native-dismiss-keyboard": "^1.0.0",
     "react-native-elements": "^0.9.6",
-    "react-native-highcharts": "^0.1.1",
+    "react-native-highcharts": "^0.0.1",
     "react-native-material-design": "^0.3.7",
     "react-native-menu": "^0.20.2",
     "react-native-modalbox": "^1.3.9",
+    "react-native-pathjs-charts": "0.0.26",
     "react-native-scrollable-tab-view": "^0.7.2",
     "react-native-vector-icons": "^4.0.0"
   },

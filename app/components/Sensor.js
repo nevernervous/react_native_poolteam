@@ -12,13 +12,13 @@ import {Text, Icon, Button} from 'react-native-elements';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Modal from 'react-native-modalbox';
-import ChartView from 'react-native-highcharts';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
 import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 import DataTable from './common/DataTable';
+import { SmoothLine } from 'react-native-pathjs-charts'
 
 const { width, height } = Dimensions.get("window");
 const HA_POLL_INTERVAL_MS = 30000;
@@ -50,7 +50,7 @@ export default class Sensor extends Component {
         super(props);
 
         let errorText = null;
-        this.values = null;
+        let values = null;
         const date = new Date();
         date.setHours(0, 0, 0, 0);
         switch (this.props.alias) {
@@ -74,7 +74,7 @@ export default class Sensor extends Component {
 
         this.state = {
             errorText,
-            // values,
+            values,
             itemCount : 30,
             date: date,
         };
@@ -106,8 +106,8 @@ export default class Sensor extends Component {
                 this.timeoutId = null;
                 this.setState({
                     errorText: err.toString(),
-                    // values: null,
-                    // timeoutId: null,
+                    values: null,
+                    timeoutId: null,
                 })
             });
     }
@@ -115,95 +115,179 @@ export default class Sensor extends Component {
     handlePoolApiResponse(response) {
         if (!this.mounted) return;
         // Re-draw every 10 sec
-        this.timeoutId = setTimeout(() => this.pollSensorData(), 10000);
-        this.values = response.payload;
+        const timeoutId = setTimeout(() => this.pollSensorData(), 1000);
+        const val_list = response.payload;
+        console.log(val_list);
         if (response.status === 304)
             this.setState({
                 errorText: null,
-                // timeoutId
+                timeoutId
             });
         else{
             this.setState({
                 errorText: null,
-                // values: val_list,
-                // timeoutId
+                values: val_list,
+                timeoutId
             });
         }
     }
 
     renderMainContent() {
-        var Highcharts = 'Highcharts';
-        let chart_data = null;
-        if (this.values != null){
-            var time = (new Date()).getTime()
-            chart_data = this.values.map((val) => {
-                return {
-                    x: val[0] * 1000,
-                    y: parseFloat(val[1])
-                };
-            });
-        }
-        var conf = {
-            chart: {
-                type: 'spline',
-                marginRight: 10,
+        // let chart_data = null;
+        // if (this.values != null){
+        //     var time = (new Date()).getTime()
+        //     chart_data = this.values.map((val) => {
+        //         return {
+        //             x: val[0] * 1000,
+        //             y: parseFloat(val[1])
+        //         };
+        //     });
+        // }
 
+        let chart_data = null;
+        let table_data = null;
+        if (this.state.values != null){
+            // Convert Epoch seconds value to date value
+            // Sample value: [1480572566, "5.75", "", ""]   >>>>  [timestamp, value, user_mail, action]
+            chart_data = this.state.values.map((val) => {return [epoch_to_date(val[0], true), parseFloat(val[1])]});
+            chart_data = [['Timestamp', this.props.alias], ].concat(chart_data);
+            table_data = this.state.values.map((val) => {return [epoch_to_date(val[0]).toString(), val[1]]});
+            table_data = table_data.filter(dd => dd[1] != null);
+        }
+
+
+        let data = [
+            [{
+                "x": 0,
+                "y": 3.4
+            }, {
+                "x": 1,
+                "y": 3.9
+            }, {
+                "x": 2,
+                "y": 4
+            }, {
+                "x": 3,
+                "y": 6
+            }, {
+                "x": 4,
+                "y": 7
+            },{
+                "x": 5,
+                "y": 2
+            },{
+                "x": 6,
+                "y": 3
+            },{
+                "x": 7,
+                "y": 10
+            },{
+                "x": 8,
+                "y": 1
+            },{
+                "x": 9,
+                "y": 19
+            },{
+                "x": 1,
+                "y": 3.4
+            }, {
+                "x": 11,
+                "y": 3.9
+            }, {
+                "x": 12,
+                "y": 4
+            }, {
+                "x": 13,
+                "y": 6
+            }, {
+                "x": 14,
+                "y": 7
+            },{
+                "x": 15,
+                "y": 2
+            },{
+                "x": 16,
+                "y": 3
+            },{
+                "x": 17,
+                "y": 10
+            },{
+                "x": 18,
+                "y": 1
+            },{
+                "x": 19,
+                "y": 10
+            },]
+        ]
+
+        let options = {
+            width: 280,
+            height: 280,
+            color: '#2980B9',
+            margin: {
+                top: 20,
+                left: 45,
+                bottom: 25,
+                right: 20
             },
-            title: {
-                text: this.name
+            animate: {
+                type: 'delayed',
+                duration: 200
             },
-            xAxis: {
-                type: 'datetime',
-                tickPixelInterval: 100
-            },
-            yAxis: {
-                title: {
-                    text: ''
+            axisX: {
+                showAxis: true,
+                showLines: true,
+                showLabels: true,
+                showTicks: false,
+                zeroAxis: false,
+                orient: 'bottom',
+                tickCount: 6,
+                tickValues: [
+                    // {value:'name1'},
+                    // {value:'name2'},
+                ],
+                label: {
+                    fontFamily: 'Arial',
+                    fontSize: 14,
+                    fontWeight: true,
+                    fill: '#34495E'
                 },
-                plotLines: [{
-                    value: 0,
-                    width: 1,
-                    color: '#808080'
-                }]
             },
-            tooltip: {
-                formatter: function () {
-                    return '<b>' + Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '</b><br/><b>' + Highcharts.numberFormat(this.y, 2); + '</b>';
+            axisY: {
+                showAxis: true,
+                showLines: true,
+                showLabels: true,
+                showTicks: false,
+                zeroAxis: false,
+                orient: 'left',
+                label: {
+                    fontFamily: 'Arial',
+                    fontSize: 14,
+                    fontWeight: true,
+                    fill: '#34495E'
                 }
-            },
-            legend: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                name: this.name,
-                data: chart_data
-            }],
-            credits: {
-                enabled: false
-            },
-        };
+            }
+        }
 
         return (
             <ScrollableTabView>
                 <View tabLabel='Graph'>
-                    {this.values == null ?
+                    {this.state.values == null ?
                         <LoadingIndicator center={false}/> :
                         chart_data.length > 1 ?
-                        <ChartView style={{marginTop: 10, height: 400}} config={conf}/> : <Text style={{marginTop: 10}} h3>No Data</Text>
+                            <SmoothLine data={data} options={options} xKey='x' yKey='y' /> : <Text style={{marginTop: 10}} h3>No Data</Text>
                     }
                 </View>
 
                 <ScrollView tabLabel='Table'>
-                    {this.values == null ?
-                        <LoadingIndicator center={false}/> :
-                        this.values.length > 1?
-                        <DataTable
-                            dataSource={this.values}
-                        /> : <Text style={{marginTop: 10}} h3>No Data</Text>
-                    }
+                    {/*{this.values == null ?*/}
+                        {/*<LoadingIndicator center={false}/> :*/}
+                        {/*this.values.length > 1?*/}
+                        {/*<DataTable*/}
+                            {/*dataSource={this.values}*/}
+                        {/*/> : <Text style={{marginTop: 10}} h3>No Data</Text>*/}
+                    {/*}*/}
+                    <Text style={{marginTop: 10}} h3>No Data</Text>
                 </ScrollView>
             </ScrollableTabView>
         );
@@ -323,7 +407,7 @@ const styles = StyleSheet.create({
         // marginTop: 30,
         // justifyContent: 'center',
         // alignItems: 'center',
-        height: 350,
+        height: 380,
         width: width,
     },
 
