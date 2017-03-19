@@ -18,7 +18,7 @@ import Logo from './common/Logo';
 import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 import DataTable from './common/DataTable';
-import { SmoothLine } from 'react-native-pathjs-charts'
+import { StockLine } from 'react-native-pathjs-charts'
 
 const { width, height } = Dimensions.get("window");
 const HA_POLL_INTERVAL_MS = 30000;
@@ -49,10 +49,8 @@ export default class Sensor extends Component {
     constructor(props) {
         super(props);
 
-        let errorText = null;
-        let values = null;
-        const date = new Date();
-        date.setHours(0, 0, 0, 0);
+        this.date = new Date();
+        this.date.setHours(0, 0, 0, 0);
         switch (this.props.alias) {
             case 'pH':
                 this.name = 'PH';
@@ -73,10 +71,9 @@ export default class Sensor extends Component {
         }
 
         this.state = {
-            errorText,
-            values,
-            itemCount : 30,
-            date: date,
+            values: null,
+            date: this.date,
+            timeoutId: null,
         };
     }
 
@@ -100,126 +97,51 @@ export default class Sensor extends Component {
         api.getPoolData(this.props.serialNumber, this.props.alias, start_time, end_time)
             .then(response => this.handlePoolApiResponse(response))
             .catch(err => {
-                clearTimeout(this.timeoutId);
-                if (!this.mounted) return;
-                this.values = null;
-                this.timeoutId = null;
-                this.setState({
-                    errorText: err.toString(),
-                    values: null,
-                    timeoutId: null,
-                })
+                clearTimeout(this.state.timeoutId);
+                Alert.alert(err.toString());
+                this.props.navigator.popToTop();
+                // if (!this.mounted) return;
+                // this.values = null;
+                // this.timeoutId = null;
+                // this.setState({
+                //     errorText: err.toString(),
+                //     values: null,
+                //     timeoutId: null,
+                // })
             });
     }
 
-    handlePoolApiResponse(response) {
+    handlePoolApiResponse(response  ) {
         if (!this.mounted) return;
-        // Re-draw every 10 sec
-        const timeoutId = setTimeout(() => this.pollSensorData(), 1000);
+
+        const timeoutId = setTimeout(() => this.pollSensorData(), HA_POLL_INTERVAL_MS);
         const val_list = response.payload;
-        console.log(val_list);
         if (response.status === 304)
             this.setState({
-                errorText: null,
+                // errorText: null,
                 timeoutId
             });
         else{
             this.setState({
-                errorText: null,
+                // errorText: null,
                 values: val_list,
                 timeoutId
             });
         }
     }
 
+    onSelectDate() {
+        clearTimeout(this.state.timeoutId);
+        this.setState({date: this.date, values: null}, () => {
+            this.refs.calendarModal.close();
+            this.pollSensorData();
+        });
+
+
+    }
     renderMainContent() {
-        // let chart_data = null;
-        // if (this.values != null){
-        //     var time = (new Date()).getTime()
-        //     chart_data = this.values.map((val) => {
-        //         return {
-        //             x: val[0] * 1000,
-        //             y: parseFloat(val[1])
-        //         };
-        //     });
-        // }
 
-        let chart_data = null;
-        let table_data = null;
-        if (this.state.values != null){
-            // Convert Epoch seconds value to date value
-            // Sample value: [1480572566, "5.75", "", ""]   >>>>  [timestamp, value, user_mail, action]
-            chart_data = this.state.values.map((val) => {return [epoch_to_date(val[0], true), parseFloat(val[1])]});
-            chart_data = [['Timestamp', this.props.alias], ].concat(chart_data);
-            table_data = this.state.values.map((val) => {return [epoch_to_date(val[0]).toString(), val[1]]});
-            table_data = table_data.filter(dd => dd[1] != null);
-        }
-
-
-        let data = [
-            [{
-                "x": 0,
-                "y": 3.4
-            }, {
-                "x": 1,
-                "y": 3.9
-            }, {
-                "x": 2,
-                "y": 4
-            }, {
-                "x": 3,
-                "y": 6
-            }, {
-                "x": 4,
-                "y": 7
-            },{
-                "x": 5,
-                "y": 2
-            },{
-                "x": 6,
-                "y": 3
-            },{
-                "x": 7,
-                "y": 10
-            },{
-                "x": 8,
-                "y": 1
-            },{
-                "x": 9,
-                "y": 19
-            },{
-                "x": 1,
-                "y": 3.4
-            }, {
-                "x": 11,
-                "y": 3.9
-            }, {
-                "x": 12,
-                "y": 4
-            }, {
-                "x": 13,
-                "y": 6
-            }, {
-                "x": 14,
-                "y": 7
-            },{
-                "x": 15,
-                "y": 2
-            },{
-                "x": 16,
-                "y": 3
-            },{
-                "x": 17,
-                "y": 10
-            },{
-                "x": 18,
-                "y": 1
-            },{
-                "x": 19,
-                "y": 10
-            },]
-        ]
-
+        let chart_data=[this.state.values,];
         let options = {
             width: 280,
             height: 280,
@@ -241,11 +163,14 @@ export default class Sensor extends Component {
                 showTicks: false,
                 zeroAxis: false,
                 orient: 'bottom',
-                tickCount: 6,
-                tickValues: [
-                    // {value:'name1'},
-                    // {value:'name2'},
-                ],
+                tickCount: 5,
+                labelFunction: ((v) => {
+                        let d= new Date(0);
+                        d.setUTCSeconds(v);
+                        let min = d.getMinutes();
+                        let minString = min < 10 ? '0' + min : min;
+                        return d.getHours() + ":" + minString;
+                }),
                 label: {
                     fontFamily: 'Arial',
                     fontSize: 14,
@@ -271,11 +196,11 @@ export default class Sensor extends Component {
 
         return (
             <ScrollableTabView>
-                <View tabLabel='Graph'>
+                <View tabLabel='Graph' style={{flex: 1,alignItems: 'center', justifyContent: 'center'}}>
                     {this.state.values == null ?
                         <LoadingIndicator center={false}/> :
-                        chart_data.length > 1 ?
-                            <SmoothLine data={data} options={options} xKey='x' yKey='y' /> : <Text style={{marginTop: 10}} h3>No Data</Text>
+                        this.state.values.length > 1 ?
+                            <StockLine data={chart_data} options={options} xKey='0' yKey='1' /> : <Text style={{marginTop: 10}} h3>No Data</Text>
                     }
                 </View>
 
@@ -350,11 +275,7 @@ export default class Sensor extends Component {
                             fontSize={18}
                             raised
                             activeOpacity={0.5}
-                            onPress={() => {
-                                this.refs.calendarModal.close();
-                                this.setState({date: this.date});
-                                this.pollSensorData();
-                            }}
+                            onPress={() => this.onSelectDate()}
                         />
                     </View>
                 </Modal>

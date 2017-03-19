@@ -11,7 +11,6 @@ import {Text, Icon, Button} from 'react-native-elements';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Modal from 'react-native-modalbox';
-import ChartView from 'react-native-highcharts';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
@@ -115,6 +114,7 @@ export default class Sensor extends Component {
         // Re-draw every 10 sec
         const timeoutId = setTimeout(() => this.pollSensorData(), 10000);
         const val_list = response.payload;
+        Alert.alert(val_list[0][0]);
         if (response.status === 304)
             this.setState({
                 errorText: null,

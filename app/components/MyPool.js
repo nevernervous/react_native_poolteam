@@ -22,7 +22,7 @@ import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 1000;
+const HA_POLL_INTERVAL_MS = 30000;
 
 export default class MyPool extends Component {
     constructor(props) {
@@ -73,14 +73,14 @@ export default class MyPool extends Component {
             })
             .catch(err => {
                clearTimeout(this.state.timeoutId);
-               if(!this.mounted) return;
-               store.pools = null;
-               this.setState({
-                   // errorText: err.toString(),
-                   pools: null,
-                   timeoutId: null
-               });
-               this.props.navigator.popToTop();
+               // if(!this.mounted) return;
+               // store.pools = null;
+               //  this.setState({
+               //     // errorText: err.toString(),
+               //     pools: null,
+               //     timeoutId: null
+               // });
+                this.props.navigator.popToTop();
             });
     }
 
@@ -114,6 +114,7 @@ export default class MyPool extends Component {
     }
 
     onPressPoolItem(pool) {
+        clearTimeout(this.state.timeoutId);
         this.mounted = false;
         this.props.navigator.push({ name: 'pool', serialNumber: pool.serialnumber});
     }
@@ -121,6 +122,7 @@ export default class MyPool extends Component {
     onPressAddPool() {
         api.addPool(this.state.new_device_name, this.state.new_device_sn)
             .then(() => {
+                clearTimeout(this.state.timeoutId);
                 this.refs.add_pool_modal.close()
                 this.pollPools();
             })
@@ -141,6 +143,7 @@ export default class MyPool extends Component {
                 // if (response.payload.status_code == 204){
                 //     console.log("Successfully deleted...");
                 // }
+                clearTimeout(this.state.timeoutId);
                 this.refs.delete_pool_modal.close();
                 this.pollPools();
             })
@@ -160,6 +163,7 @@ export default class MyPool extends Component {
                 // if (response.payload.status_code == 204){
                 //     console.log("Successfully updated...");
                 // }
+                clearTimeout(this.state.timeoutId);
                 this.refs.edit_pool_modal.close();
                 this.pollPools();
             })
