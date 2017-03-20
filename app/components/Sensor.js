@@ -12,16 +12,17 @@ import {Text, Icon, Button} from 'react-native-elements';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Modal from 'react-native-modalbox';
+import DataTable from './DataTable/dataTable';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
 import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
-import DataTable from './common/DataTable';
+
 import { StockLine } from 'react-native-pathjs-charts'
 
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 30000;
+const HA_POLL_INTERVAL_MS = 10000;
 
 
 function getMuranoErrorText() {
@@ -44,6 +45,12 @@ function epoch_to_date(sec, rfc) {
         result = d;
     return result
 }
+
+var talble_fields = [{
+    label: 'Timestamp',
+}, {
+    label: 'Reading'
+}];
 
 export default class Sensor extends Component {
     constructor(props) {
@@ -98,7 +105,7 @@ export default class Sensor extends Component {
             .then(response => this.handlePoolApiResponse(response))
             .catch(err => {
                 clearTimeout(this.state.timeoutId);
-                Alert.alert(err.toString());
+                // Alert.alert(err.toString());
                 this.props.navigator.popToTop();
                 // if (!this.mounted) return;
                 // this.values = null;
@@ -141,78 +148,101 @@ export default class Sensor extends Component {
     }
     renderMainContent() {
 
-        let chart_data=[this.state.values,];
-        let options = {
-            width: 280,
-            height: 280,
-            color: '#2980B9',
-            margin: {
-                top: 20,
-                left: 45,
-                bottom: 25,
-                right: 20
-            },
-            animate: {
-                type: 'delayed',
-                duration: 200
-            },
-            axisX: {
-                showAxis: true,
-                showLines: true,
-                showLabels: true,
-                showTicks: false,
-                zeroAxis: false,
-                orient: 'bottom',
-                tickCount: 5,
-                labelFunction: ((v) => {
+        var dataSource = new ListView.DataSource({
+            rowHasChanged: (r1, r2) => r1 !== r2,
+        });
+
+        let chart_data = [];
+        let chart_options = {};
+        if(this.state.values !=null && this.state.values.length > 0 ) {
+            dataSource = dataSource.cloneWithRows(this.state.values.map((val) => {
+                let d = new Date(0);
+                d.setUTCSeconds(val[0]);
+                return [(d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds(), val[1]];
+
+            }));
+            chart_data=[this.state.values,];
+            chart_options = {
+                width: 280,
+                height: 280,
+                color: '#2980B9',
+                margin: {
+                    top: 20,
+                    left: 45,
+                    bottom: 25,
+                    right: 20
+                },
+                animate: {
+                    type: 'delayed',
+                    duration: 200
+                },
+                // showAreas: false,
+                axisX: {
+                    showAxis: true,
+                    showLines: true,
+                    showLabels: true,
+                    showTicks: false,
+                    zeroAxis: false,
+                    orient: 'bottom',
+                    tickCount: 5,
+                    labelFunction: ((v) => {
                         let d= new Date(0);
                         d.setUTCSeconds(v);
                         let min = d.getMinutes();
                         let minString = min < 10 ? '0' + min : min;
                         return d.getHours() + ":" + minString;
-                }),
-                label: {
-                    fontFamily: 'Arial',
-                    fontSize: 14,
-                    fontWeight: true,
-                    fill: '#34495E'
+                    }),
+                    label: {
+                        fontFamily: 'Arial',
+                        fontSize: 14,
+                        fontWeight: true,
+                        fill: '#34495E'
+                    },
                 },
-            },
-            axisY: {
-                showAxis: true,
-                showLines: true,
-                showLabels: true,
-                showTicks: false,
-                zeroAxis: false,
-                orient: 'left',
-                label: {
-                    fontFamily: 'Arial',
-                    fontSize: 14,
-                    fontWeight: true,
-                    fill: '#34495E'
+                axisY: {
+                    showAxis: true,
+                    showLines: true,
+                    showLabels: true,
+                    showTicks: false,
+                    zeroAxis: false,
+                    orient: 'left',
+                    label: {
+                        fontFamily: 'Arial',
+                        fontSize: 14,
+                        fontWeight: true,
+                        fill: '#34495E'
+                    }
                 }
             }
+
         }
+
+
+
 
         return (
             <ScrollableTabView>
                 <View tabLabel='Graph' style={{flex: 1,alignItems: 'center', justifyContent: 'center'}}>
                     {this.state.values == null ?
                         <LoadingIndicator center={false}/> :
-                        this.state.values.length > 1 ?
-                            <StockLine data={chart_data} options={options} xKey='0' yKey='1' /> : <Text style={{marginTop: 10}} h3>No Data</Text>
+                        this.state.values.length > 0 ?
+                            <StockLine data={chart_data}
+                                       options={chart_options}
+                                       xKey='0'
+                                       yKey='1'
+                            /> : <Text style={{marginTop: 10}} h3>No Data</Text>
                     }
                 </View>
 
                 <ScrollView tabLabel='Table'>
-                    {/*{this.values == null ?*/}
-                        {/*<LoadingIndicator center={false}/> :*/}
-                        {/*this.values.length > 1?*/}
-                        {/*<DataTable*/}
-                            {/*dataSource={this.values}*/}
-                        {/*/> : <Text style={{marginTop: 10}} h3>No Data</Text>*/}
-                    {/*}*/}
-                    <Text style={{marginTop: 10}} h3>No Data</Text>
+                    {this.state.values == null ?
+                        <LoadingIndicator center={false}/> :
+                        this.state.values.length > 0?
+                            <DataTable
+                                dataSource={dataSource}
+                                fields={talble_fields}
+                            />: <Text style={{marginTop: 10}} h3>No Data</Text>
+                    }
                 </ScrollView>
             </ScrollableTabView>
         );

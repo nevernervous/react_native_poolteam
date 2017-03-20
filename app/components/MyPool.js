@@ -22,7 +22,7 @@ import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 30000;
+const HA_POLL_INTERVAL_MS = 10000;
 
 export default class MyPool extends Component {
     constructor(props) {
