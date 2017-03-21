@@ -13,7 +13,7 @@ import {
 } from 'react-native-elements';
 
 import PoolListItem from './PoolListItem';
-import Menu, { MenuContext, MenuOptions, MenuOption, MenuTrigger } from 'react-native-menu';
+import Menu, { MenuContext, MenuOptions, MenuOption, MenuTrigger } from './PopupMenu';
 import {grey300, } from './color';
 
 const { width, height } = Dimensions.get("window");

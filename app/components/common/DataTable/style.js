@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import {grey500} from '../common/color';
+import {grey500} from '../color';
 export default StyleSheet.create({
     container: {
         flex: 1,

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { View, StyleSheet, TouchableHighlight, Image, Platform ,Alert} from 'react-native';
 import {Text, Icon} from 'react-native-elements';
-import Menu, { MenuContext, MenuOptions, MenuOption, MenuTrigger } from 'react-native-menu';
+import Menu, { MenuContext, MenuOptions, MenuOption, MenuTrigger } from './PopupMenu';
 import fonts from './font';
 import normalize from './normalize';
 

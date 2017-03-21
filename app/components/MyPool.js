@@ -107,7 +107,8 @@ export default class MyPool extends Component {
                 this.props.navigator.push({ name: 'settings' });
                 break;
             case 'Logout':
-                this.props.navigator.pop();
+                clearTimeout(this.state.timeoutId);
+                this.props.navigator.popToTop();
                 break;
         }
         this.mounted = false;

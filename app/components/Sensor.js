@@ -12,7 +12,7 @@ import {Text, Icon, Button} from 'react-native-elements';
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Modal from 'react-native-modalbox';
-import DataTable from './DataTable/dataTable';
+import DataTable from './common/DataTable/dataTable';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
