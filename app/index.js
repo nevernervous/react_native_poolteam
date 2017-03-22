@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Navigator} from 'react-native';
+import {StyleSheet, Navigator, BackAndroid} from 'react-native';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import MyPool from './components/MyPool';
@@ -20,12 +20,15 @@ var ROUTES = {
     settings: Settings,
 };
 
+var navigator;
 export default class App extends Component {
     constructor(props) {
         super(props);
+        // this.navigator = {};
     }
 
     renderScene(route, navigator) {
+        // this.navigator = navigator;
         let RouteComponent = ROUTES[route.name];
         return <RouteComponent ref={component => { route.scene = component; }}
                                navigator={navigator} {...route}/>;
@@ -37,9 +40,22 @@ export default class App extends Component {
         }
     }
 
+    componentDidMount() {
+        BackAndroid.addEventListener('hardwareBackPress', this.handleBack);
+    }
+
+    handleBack() {
+        if (navigator && navigator.getCurrentRoutes().length > 1) {
+            navigator.pop();
+            return true; //avoid closing the app
+        }
+        return false; //close the app
+    }
+
     render() {
         return (
             <Navigator
+                ref={(nav) => { navigator = nav; }}
                 style = {styles.container}
                 initialRoute={{name: 'login'}}
                 renderScene={this.renderScene}

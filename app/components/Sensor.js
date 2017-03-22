@@ -271,7 +271,7 @@ export default class Sensor extends Component {
                               size={40}
                               onPress={() => this.showCalendar()}
                         />
-                        <Text h4 style={styles.dateText}>{this.state.date.toLocaleDateString()}</Text>
+                        <Text h4 style={styles.dateText}>{(this.state.date.getMonth() + 1) + "/" + this.state.date.getDate() + "/" + this.state.date.getFullYear()}</Text>
                     </View>
                 </View>
 

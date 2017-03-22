@@ -17,7 +17,7 @@ import Modal from 'react-native-modalbox';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, blue400} from './common/color';
+import {yellow600, blue900, grey300, blue400, red500} from './common/color';
 import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
@@ -37,6 +37,7 @@ export default class MyPool extends Component {
             delete_modal_text: '',
             edit_modal_text: '',
             selected_pool: null,
+            alert_msg: [],
         };
     }
 
@@ -45,6 +46,9 @@ export default class MyPool extends Component {
         this.pollPools();
     }
 
+    componentDidMount() {
+
+    }
     componentWillUnmount() {
         this.mounted = false;
         clearTimeout(this.state.timeoutId);
@@ -366,6 +370,12 @@ export default class MyPool extends Component {
                 </View>
             </Modal>
 
+            <Modal isOpen={false}
+                   position="bottom"
+                   style={{height:100}}
+            >
+                <Text style={{color: red500, fontSize: 15, paddingLeft: 10, paddingVertical: 10}}>Pool Notification</Text>
+            </Modal>
         </SideMenu>
 
         );
