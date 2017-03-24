@@ -13,17 +13,15 @@ import Modal from 'react-native-modalbox';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, grey600, grey700, grey800, grey900, blue400, green800, red400, red500} from './common/color';
+import {yellow600, blue900, grey300, grey600, grey800, grey900, blue400, red500} from './common/color';
 import base32 from './common/base32';
 import LoadingIndicator from './common/LoadingIndicator';
-const { width, height } = Dimensions.get("window");
 
 export default class Settings extends Component {
     constructor(props) {
         super(props);
         this.state = {
             b_loading: false,
-            errorText: null,
             alert_emails: [],
             buf_index: null,
             btn_dialog: true,
@@ -52,8 +50,7 @@ export default class Settings extends Component {
         api.get_alert('email')
             .then(response => {
                 if (!this.mounted) return;
-                console.log(response.payload);
-                if (response.status === 304) this.setState({ errorText: null, b_loading: false});
+                if (response.status === 304) this.setState({b_loading: false});
                 else {
                     if (response.payload.length > 0){
                         let emails = [];
@@ -63,14 +60,12 @@ export default class Settings extends Component {
                     } else {
                         this.setState({ alert_emails: []});
                     }
-                    this.setState({ errorText: null, b_loading: false});
+                    this.setState({b_loading: false});
                 }
             })
             .catch(err => {
-                console.log(err);
                 if (!this.mounted) return;
                 this.setState({
-                    errorText: err.toString(),
                     alert_emails: [],
                 })
             });
@@ -81,14 +76,12 @@ export default class Settings extends Component {
         api.get_alert('sms')
             .then(response => {
                 if (!this.mounted) return;
-                // console.log(response.payload);
-                if (response.status === 304) this.setState({ errorText: null, b_loading: false});
-                else this.setState({ errorText: null, b_loading: false, alert_sms: response.payload});
+                if (response.status === 304) this.setState({b_loading: false});
+                else this.setState({b_loading: false, alert_sms: response.payload});
             })
             .catch(err => {
                 if (!this.mounted) return;
                 this.setState({
-                    errorText: err.toString(),
                     alert_sms: [],
                 })
             });
@@ -99,7 +92,7 @@ export default class Settings extends Component {
         api.getSmsPhone()
             .then(response => {
                 if (!this.mounted) return;
-                if (response.status === 304) this.setState({ errorText: null, b_loading: false});
+                if (response.status === 304) this.setState({b_loading: false});
                 else {
                     this.setState({ sender_phone: response.payload, b_loading: false});
                 }
@@ -107,7 +100,6 @@ export default class Settings extends Component {
             .catch(err => {
                 if (!this.mounted) return;
                 this.setState({
-                    errorText: err.toString(),
                     alert_emails: [],
                 })
             });
@@ -132,16 +124,10 @@ export default class Settings extends Component {
         else target_alert = this.state.alert_sms[this.state.buf_index];
         api.delete_alert(this.state.alert_type, target_alert)
             .then(response => {
-                // console.log(response);
-                if (response.payload.status == 200){
-                    console.log("Successfully deleted...");
-                }
                 if (this.state.alert_type == 'email') this.pollAlertMails();
                 else this.pollAlertSms();
             })
             .catch(err => {
-                console.log("Error");
-                console.log(err);
                 this.setState({isWorking: false});
             });
     }
@@ -180,29 +166,13 @@ export default class Settings extends Component {
         if (this.state.alert_type != 'sender_phone')
             api.add_alert(this.state.alert_type, target_alert)
                 .then(response => {
-                    // console.log(response);
-                    if (response.payload.status == 200){
-                        console.log("Successfully added...");
-                    }
                     if (this.state.alert_type == 'email') this.pollAlertMails();
                     else this.pollAlertSms();
-                })
-                .catch(err => {
-                    console.log("Error");
-                    console.log(err);
                 });
         else
             api.setSmsPhone(this.state.txt_dialog)
                 .then(response => {
-                    // console.log(response);
-                    if (response.payload.status == 200){
-                        console.log("Successfully updated the sender's phone number...");
-                    }
                     this.pollSmsPhone();
-                })
-                .catch(err => {
-                    console.log("Error");
-                    console.log(err);
                 });
     }
 

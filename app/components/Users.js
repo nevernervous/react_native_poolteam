@@ -15,7 +15,6 @@ import api from '../api';
 import Logo from './common/Logo';
 import {yellow600, blue900, grey300, red500, lime500} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
-const { width, height } = Dimensions.get("window");
 
 export default class Users extends Component {
     constructor(props) {

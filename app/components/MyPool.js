@@ -31,7 +31,6 @@ export default class MyPool extends Component {
             isMenuOpen: false,
             pools: store.pools || null,
             timeoutId: null,
-            // errorText: null,
             new_device_name: '',
             new_device_sn: '',
             delete_modal_text: '',
@@ -45,10 +44,6 @@ export default class MyPool extends Component {
     componentWillMount() {
         this.mounted = true;
         this.pollPools();
-    }
-
-    componentDidMount() {
-
     }
 
     componentWillUnmount() {
@@ -91,14 +86,7 @@ export default class MyPool extends Component {
             })
             .catch(err => {
                clearTimeout(this.state.timeoutId);
-               // if(!this.mounted) return;
-               // store.pools = null;
-               //  this.setState({
-               //     // errorText: err.toString(),
-               //     pools: null,
-               //     timeoutId: null
-               // });
-                this.props.navigator.popToTop();
+               this.props.navigator.popToTop();
             });
     }
 
@@ -159,9 +147,6 @@ export default class MyPool extends Component {
     deletePool() {
         api.removePool(this.state.selected_pool.serialnumber)
             .then(response => {
-                // if (response.payload.status_code == 204){
-                //     console.log("Successfully deleted...");
-                // }
                 clearTimeout(this.state.timeoutId);
                 this.refs.delete_pool_modal.close();
                 this.pollPools();
@@ -179,9 +164,6 @@ export default class MyPool extends Component {
     editPool() {
         api.updatePoolName(this.state.selected_pool.serialnumber, this.state.edit_modal_text)
             .then(response => {
-                // if (response.payload.status_code == 204){
-                //     console.log("Successfully updated...");
-                // }
                 clearTimeout(this.state.timeoutId);
                 this.refs.edit_pool_modal.close();
                 this.pollPools();
@@ -211,10 +193,6 @@ export default class MyPool extends Component {
 
     renderMainContent() {
         const { pools } = this.state;
-        // if (errorText) {
-        //     Alert.alert('Error', errorText);
-        //     return;
-        // }
         if (!pools) return <LoadingIndicator />;
         if (pools.length)
             return <PoolList

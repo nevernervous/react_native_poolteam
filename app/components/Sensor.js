@@ -16,7 +16,7 @@ import DataTable from './common/DataTable/dataTable';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
+import {yellow600, blue900, grey300,} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 
 import { StockLine } from 'react-native-pathjs-charts'
@@ -24,29 +24,7 @@ import { StockLine } from 'react-native-pathjs-charts'
 const { width, height } = Dimensions.get("window");
 const HA_POLL_INTERVAL_MS = 3000;
 
-
-function getMuranoErrorText() {
-    return `Murano Error: It appears this serial number was either not
-    added as a device, this device was not activated, the product was
-    not associated with this solution, or the device has not written
-    to the platform.`;
-}
-
-function epoch_to_date(sec, rfc) {
-    let d = new Date(0); // The 0 there is the key, which sets the date to the epoch
-    d.setUTCSeconds(sec);
-    let result = null;
-    if (rfc == true)
-        result = d;
-    else
-    if (window.innerWidth < 600)
-        result = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-    else
-        result = d;
-    return result
-}
-
-var talble_fields = [{
+const talble_fields = [{
     label: 'Timestamp',
 }, {
     label: 'Reading'
@@ -105,16 +83,7 @@ export default class Sensor extends Component {
             .then(response => this.handlePoolApiResponse(response))
             .catch(err => {
                 clearTimeout(this.state.timeoutId);
-                // Alert.alert(err.toString());
                 this.props.navigator.popToTop();
-                // if (!this.mounted) return;
-                // this.values = null;
-                // this.timeoutId = null;
-                // this.setState({
-                //     errorText: err.toString(),
-                //     values: null,
-                //     timeoutId: null,
-                // })
             });
     }
 
@@ -125,12 +94,10 @@ export default class Sensor extends Component {
         const val_list = response.payload;
         if (response.status === 304)
             this.setState({
-                // errorText: null,
                 timeoutId
             });
         else{
             this.setState({
-                // errorText: null,
                 values: val_list,
                 timeoutId
             });
@@ -216,9 +183,6 @@ export default class Sensor extends Component {
             }
 
         }
-
-
-
 
         return (
             <ScrollableTabView>

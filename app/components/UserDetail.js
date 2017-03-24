@@ -20,8 +20,7 @@ import api from '../api';
 import normalize from './common/normalize';
 import Logo from './common/Logo';
 import fonts from './common/font';
-import {yellow600, blue900, grey300, blue400, green800, red500, lime500} from './common/color';
-import LoadingIndicator from './common/LoadingIndicator';
+import {yellow600, blue900, grey300, blue400, red500} from './common/color';
 const { width, height } = Dimensions.get("window");
 
 export default class UserDetail extends Component {

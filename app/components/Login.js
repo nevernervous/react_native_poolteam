@@ -26,17 +26,13 @@ export default class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: "a@a.com",
-            // email: "rpiguru@techie.com",
-            password: "12345678",
+            email: '',
+            password: '',
             isAuthenticating: false,
             recoveryEmail: '',
         }
     }
 
-    componentDidMount() {
-        this.onPressLogin();
-    }
     focusNextField = (nextField) => {
         this.refs[nextField].focus();
     };

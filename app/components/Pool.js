@@ -19,27 +19,15 @@ import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
 const HA_POLL_INTERVAL_MS = 3000;
 
-function getMuranoErrorText() {
-    return `Murano Error: It appears this serial number was either not
-    added as a device, this device was not activated, the product was
-    not associated with this solution, or the device has not written
-    to the platform.`;
-}
-
 export default class Pool extends Component {
     constructor(props) {
         super(props);
         let pool = null;
         if (store.pools) {
             pool = store.pools.filter(wall => wall.serialnumber == this.props.serialNumber)[0];
-            // if (pool && (pool.state === null || !pool.hasOwnProperty('state') || pool.state === "undefined")) {
-            //     pool = null;
-            //     errorText = getMuranoErrorText();
-            // }
         }
 
         this.state = {
-            // errorText: null,
             isChangingWallState: false,
             pool: pool,
             poolName: pool.name,
@@ -81,12 +69,6 @@ export default class Pool extends Component {
             .then(response => this.handlePoolApiResponse(response))
             .catch(err => {
                 clearTimeout(this.state.timeoutId);
-                // if (!this.mounted) return;
-                // this.setState({
-                //     errorText: err.toString(),
-                //     pool: null,
-                //     timeoutId: null,
-                // });
                 this.props.navigator.popToTop();
             });
     }
@@ -99,12 +81,10 @@ export default class Pool extends Component {
         const pool = pools.filter(wall => wall.serialnumber == serialnumber)[0];
         if (response.status === 304)
             this.setState({
-                // errorText: null,
                 timeoutId
             });
         else{
             this.setState({
-                // errorText: null,
                 pool,
                 timeoutId,
                 alert_msg: pool.alert
