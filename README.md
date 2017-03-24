@@ -1,29 +1,15 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### Prerequisites
+    brew install node
+    brew install watchman
+    npm install -g react-native-cli
+    
+### Developing
+1. Run `npm install` to install dependencies
+2. Run `react-native run-ios` or `react-native run-android`. It should automatically run the JS server on 8081 port and install and run the app on the iOS or android emulator.
 
-### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
