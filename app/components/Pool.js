@@ -4,19 +4,20 @@ import {
     View,
     StyleSheet,
     Dimensions,
+    ScrollView,
 } from 'react-native';
 
-import {Text, Icon} from 'react-native-elements';
+import {Text, Icon, Button} from 'react-native-elements';
 import { Divider } from 'react-native-material-design';
-
+import Modal from 'react-native-modalbox';
 import PoolInfoItem from './common/PoolInfoItem';
 import store from '../store';
 import api from '../api';
 import Logo from './common/Logo';
-import {yellow600, blue900, grey300, blue400, green800, red400} from './common/color';
+import {yellow600, blue900, grey300, red500} from './common/color';
 import LoadingIndicator from './common/LoadingIndicator';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 10000;
+const HA_POLL_INTERVAL_MS = 3000;
 
 function getMuranoErrorText() {
     return `Murano Error: It appears this serial number was either not
@@ -42,6 +43,8 @@ export default class Pool extends Component {
             isChangingWallState: false,
             pool: pool,
             poolName: pool.name,
+            is_alert_modal_open: true,
+            alert_msg: null,
         };
     }
 
@@ -58,6 +61,19 @@ export default class Pool extends Component {
     componentWillFocus() {
         this.mounted = true;
         this.pollPools();
+        this.setState({is_alert_modal_open: true})
+    }
+
+    GotIt() {
+        this.setState({alert_msg: null});
+        if(this.state.pool.alert != null) {
+                api.dismissAlert(this.state.pool.serialnumber);
+        }
+    }
+
+    onCloseAlert_modal() {
+        if(this.state.alert_msg != null)
+            this.setState({is_alert_modal_open: false});
     }
 
     pollPools() {
@@ -89,7 +105,9 @@ export default class Pool extends Component {
         else{
             this.setState({
                 // errorText: null,
-                pool, timeoutId
+                pool,
+                timeoutId,
+                alert_msg: pool.alert
             });
         }
     }
@@ -138,6 +156,32 @@ export default class Pool extends Component {
                     <Text h4 style={styles.headerText}>{this.state.poolName}</Text>
                 </View>
                 {this.renderMainContent()}
+                <Modal
+                    isOpen={this.state.is_alert_modal_open && this.state.alert_msg != null}
+                    onClosed={() => this.onCloseAlert_modal()}
+                    ref={"alert_modal"}
+                    position="bottom"
+                    swipeToClose={false}
+                    style={{height: 120, borderTopColor: 'red', borderTopWidth: 1,}}
+                >
+                    <Text style={{color: red500, fontSize: 15, fontWeight: 'bold', paddingLeft: 10, paddingVertical: 5}}>Pool Notification</Text>
+                    <ScrollView style={{height: 100, paddingLeft: 20}}>
+                        <Text>
+                            {this.state.alert_msg}
+                        </Text>
+                    </ScrollView>
+                    <View style={{ paddingBottom: 10}}>
+                        <Button
+                            title="Got it"
+                            backgroundColor={yellow600}
+                            color={blue900}
+                            fontSize={15}
+                            raised
+                            activeOpacity={0.5}
+                            onPress={() => this.GotIt()}
+                        />
+                    </View>
+                </Modal>
             </View>
         );
     }

@@ -22,7 +22,7 @@ import PoolSideMenu from './common/PoolSideMenu';
 import LoadingIndicator from './common/LoadingIndicator';
 import PoolList from './common/PoolList';
 const { width, height } = Dimensions.get("window");
-const HA_POLL_INTERVAL_MS = 10000;
+const HA_POLL_INTERVAL_MS = 3000;
 
 export default class MyPool extends Component {
     constructor(props) {
@@ -37,6 +37,7 @@ export default class MyPool extends Component {
             delete_modal_text: '',
             edit_modal_text: '',
             selected_pool: null,
+            is_alert_modal_open: true,
             alert_msg: [],
         };
     }
@@ -49,6 +50,7 @@ export default class MyPool extends Component {
     componentDidMount() {
 
     }
+
     componentWillUnmount() {
         this.mounted = false;
         clearTimeout(this.state.timeoutId);
@@ -57,7 +59,9 @@ export default class MyPool extends Component {
 
     componentWillFocus() {
         this.mounted = true;
+        this.setState({alert_msg: [], is_alert_modal_open: true})
         this.pollPools();
+
     }
 
     pollPools() {
@@ -69,10 +73,20 @@ export default class MyPool extends Component {
                     this.setState({timeoutId});
                 }else {
                     store.pools = response.payload;
+                    let alert_msg = [];
+                    if(response.payload !=null) {
+                        response.payload.forEach((pool) => {
+                            if(pool.alert != null) {
+                                alert_msg.push({'device': pool.name, 'msg': pool.alert});
+                            }
+                        });
+                    }
                     this.setState({
                         pools: response.payload,
+                        alert_msg: alert_msg,
                         timeoutId,
                     });
+
                 }
             })
             .catch(err => {
@@ -179,6 +193,20 @@ export default class MyPool extends Component {
 
     onCloseDialog() {
         this.setState({new_device_name: '', new_device_sn: ''});
+    }
+
+    GotIt() {
+        this.setState({alert_msg: []});
+        this.state.pools.forEach((pool) => {
+            if(pool.alert != null) {
+                api.dismissAlert(pool.serialnumber);
+            }
+        });
+    }
+
+    onCloseAlert_modal() {
+        if(this.state.alert_msg.length > 0)
+            this.setState({is_alert_modal_open: false});
     }
 
     renderMainContent() {
@@ -370,17 +398,43 @@ export default class MyPool extends Component {
                 </View>
             </Modal>
 
-            <Modal isOpen={false}
-                   position="bottom"
-                   style={{height:100}}
+            <Modal
+                isOpen={this.state.is_alert_modal_open && this.state.alert_msg.length > 0}
+                onClosed={() => this.onCloseAlert_modal()}
+                ref={"alert_modal"}
+                position="bottom"
+                swipeToClose={false}
+                style={{height: 200, borderTopColor: 'red', borderTopWidth: 1,}}
             >
-                <Text style={{color: red500, fontSize: 15, paddingLeft: 10, paddingVertical: 10}}>Pool Notification</Text>
+                <Text style={{color: red500, fontSize: 15, fontWeight: 'bold', paddingLeft: 10, paddingVertical: 5}}>Pool Notification</Text>
+                <ScrollView style={{height: 150}}>
+                    {this.state.alert_msg.map((alert, i) => (
+                        <View key={i} style={{paddingLeft: 20, paddingBottom: 5}}>
+                            <Text>
+                                - {alert.device}
+                            </Text>
+                            <Text>
+                                {alert.msg}
+                            </Text>
+                        </View>
+                    ))}
+                </ScrollView>
+                <View style={{ paddingBottom: 10}}>
+                    <Button
+                        title="Got it"
+                        backgroundColor={yellow600}
+                        color={blue900}
+                        fontSize={15}
+                        raised
+                        activeOpacity={0.5}
+                        onPress={() => this.GotIt()}
+                    />
+                </View>
             </Modal>
         </SideMenu>
 
         );
     }
-
 }
 
 const styles = StyleSheet.create({
